@@ -46,7 +46,7 @@ class MathUtility {
      * @param {number|string} b - Preferably the maximum. If a string, it should be a valid solfege name.
      * @param {number} [c] - Octave (for cases when a and b are solfeges).
      * @returns {number|array} - A random number between a and b (both inclusive) or a random solfege array.
-     * @throws {string} NAN error if the arguments are not valid.
+     * @throws {Error} NAN error if the arguments are not valid.
      */
     static doRandom(a, b, c) {
         /**
@@ -102,7 +102,7 @@ class MathUtility {
         ) {
             return GetRandomSolfege(a, b, c);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -125,13 +125,13 @@ class MathUtility {
      * @param {number} a
      * @param {number} b
      * @returns {number} - Result of a modulo b.
-     * @throws {string} NAN error if the arguments are not valid.
+     * @throws {Error} NAN error if the arguments are not valid.
      */
     static doMod(a, b) {
         if (typeof a === "number" && typeof b === "number") {
             return Number(a) % Number(b);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -141,17 +141,17 @@ class MathUtility {
      * @static
      * @param {number} a
      * @returns {number} - Square root of a.
-     * @throws {string} No square root error, NAN error if the arguments are not valid.
+     * @throws {Error} No square root error, NAN error if the arguments are not valid.
      */
     static doSqrt(a) {
         if (typeof a === "number") {
             if (a < 0) {
-                throw "NoSqrtError";
+                throw new Error("NoSqrtError");
             }
 
             return Math.sqrt(Number(a));
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -161,13 +161,13 @@ class MathUtility {
      * @static
      * @param {number} a - Angle in degrees
      * @returns {number} - Sine of the angle
-     * @throws {string} NAN error if the argument is not valid
+     * @throws {Error} NAN error if the argument is not valid
      */
     static doSin(a) {
         if (typeof a === "number") {
             return Math.sin((a * Math.PI) / 180);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -177,13 +177,13 @@ class MathUtility {
      * @static
      * @param {number} a - Angle in degrees
      * @returns {number} - Cosine of the angle
-     * @throws {string} NAN error if the argument is not valid
+     * @throws {Error} NAN error if the argument is not valid
      */
     static doCos(a) {
         if (typeof a === "number") {
             return Math.cos((a * Math.PI) / 180);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -193,16 +193,16 @@ class MathUtility {
      * @static
      * @param {number} a
      * @returns {number} - Natural logarithm of a
-     * @throws {string} NAN error if the argument is not valid or non-positive
+     * @throws {Error} NAN error if the argument is not valid or non-positive
      */
     static doLog(a) {
         if (typeof a === "number") {
             if (a <= 0) {
-                throw "NanError";
+                throw new Error("NanError");
             }
             return Math.log(a);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -232,11 +232,11 @@ class MathUtility {
      * @param {number} a
      * @param {number} b
      * @returns {number} - Result of a minus b.
-     * @throws {string} NAN error if the arguments are not valid.
+     * @throws {Error} NAN error if the arguments are not valid.
      */
     static doMinus(a, b) {
         if (typeof a === "string" || typeof b === "string") {
-            throw "NanError";
+            throw new Error("NanError");
         }
 
         return Number(a) - Number(b);
@@ -249,11 +249,11 @@ class MathUtility {
      * @param {*} a
      * @param {*} b
      * @returns {number} - Result of a multiplied by b.
-     * @throws {string} NAN error if the arguments are not valid.
+     * @throws {Error} NAN error if the arguments are not valid.
      */
     static doMultiply(a, b) {
         if (typeof a === "string" || typeof b === "string") {
-            throw "NanError";
+            throw new Error("NanError");
         }
 
         return Number(a) * Number(b);
@@ -266,17 +266,17 @@ class MathUtility {
      * @param {number} a
      * @param {number} b
      * @returns {number} - Result of a divided by b.
-     * @throws {string} Divide by Zero error, NAN error if the arguments are not valid.
+     * @throws {Error} Divide by Zero error, NAN error if the arguments are not valid.
      */
     static doDivide(a, b) {
         if (typeof a === "number" && typeof b === "number") {
             if (Number(b) === 0) {
-                throw "DivByZeroError";
+                throw new Error("DivByZeroError");
             }
 
             return Number(a) / Number(b);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -289,7 +289,7 @@ class MathUtility {
      * @param {number} x2
      * @param {number} y2
      * @returns {number} - Euclidean distance between two points.
-     * @throws {string} NAN error if the arguments are not valid.
+     * @throws {Error} NAN error if the arguments are not valid.
      */
     static doCalculateDistance(x1, y1, x2, y2) {
         if (
@@ -304,7 +304,7 @@ class MathUtility {
 
             return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -315,13 +315,13 @@ class MathUtility {
      * @param {number} a
      * @param {number} b
      * @returns {number} - Result of a raised to the power of b.
-     * @throws {string} NAN error if the arguments are not valid.
+     * @throws {Error} NAN error if the arguments are not valid.
      */
     static doPower(a, b) {
         if (typeof a === "number" && typeof b === "number") {
             return Math.pow(a, b);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -331,13 +331,13 @@ class MathUtility {
      * @static
      * @param {number} a
      * @returns {number} - Absolute value of a.
-     * @throws {string} NAN error if the argument is not valid.
+     * @throws {Error} NAN error if the argument is not valid.
      */
     static doAbs(a) {
         if (typeof a === "number") {
             return Math.abs(a);
         } else {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 
@@ -347,7 +347,7 @@ class MathUtility {
      * @static
      * @param {*} a
      * @returns {number|string} - Negative value of a (if number) or string in reverse (if string).
-     * @throws {string} No Negation error if the argument is not valid.
+     * @throws {Error} No Negation error if the argument is not valid.
      */
     static doNegate(a) {
         if (typeof a === "number") {
@@ -356,7 +356,7 @@ class MathUtility {
             const obj = a.split("");
             return obj.reverse().join("");
         } else {
-            throw "NoNegError";
+            throw new Error("NoNegError");
         }
     }
 
@@ -366,13 +366,13 @@ class MathUtility {
      * @static
      * @param {*} a
      * @returns {number} - Integer value of a.
-     * @throws {string} NAN error if the argument is not valid.
+     * @throws {Error} NAN error if the argument is not valid.
      */
     static doInt(a) {
         try {
             return Math.floor(Number(a) + 0.5);
         } catch (e) {
-            throw "NanError";
+            throw new Error("NanError");
         }
     }
 }
