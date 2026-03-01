@@ -2945,7 +2945,9 @@ const piemenuVoices = (block, voiceLabels, voiceValues, categories, voice, rotat
         }
 
         setTimeout(() => {
-            Singer.setSynthVolume(that.activity.logo, 0, voice, DEFAULTVOLUME);
+            if (that.activity.logo.deps && that.activity.logo.deps.Singer) {
+                that.activity.logo.deps.Singer.setSynthVolume(that.activity.logo, 0, voice, DEFAULTVOLUME);
+            }
             that.activity.logo.synth.trigger(0, "G4", 1 / 4, voice, null, null, false);
             that.activity.logo.synth.start();
         }, timeout);
@@ -3212,7 +3214,9 @@ const piemenuIntervals = (block, selectedInterval) => {
         }
 
         that.activity.logo.synth.setMasterVolume(DEFAULTVOLUME);
-        Singer.setSynthVolume(that.activity.logo, 0, DEFAULTVOICE, DEFAULTVOLUME);
+        if (that.activity.logo.deps && that.activity.logo.deps.Singer) {
+            that.activity.logo.deps.Singer.setSynthVolume(that.activity.logo, 0, DEFAULTVOICE, DEFAULTVOLUME);
+        }
 
         if (!that._triggerLock) {
             that._triggerLock = true;
@@ -4213,7 +4217,9 @@ const piemenuKey = activity => {
         }
 
         activity.logo.synth.setMasterVolume(DEFAULTVOLUME);
-        Singer.setSynthVolume(activity.logo, 0, DEFAULTVOICE, DEFAULTVOLUME);
+        if (activity.logo.deps && activity.logo.deps.Singer) {
+            activity.logo.deps.Singer.setSynthVolume(activity.logo, 0, DEFAULTVOICE, DEFAULTVOLUME);
+        }
         activity.logo.synth.trigger(0, [obj[0] + obj[1]], 1 / 12, DEFAULTVOICE, null, null);
     };
 
