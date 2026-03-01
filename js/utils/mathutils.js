@@ -156,6 +156,57 @@ class MathUtility {
     }
 
     /**
+     * Returns the sine of an angle in degrees.
+     *
+     * @static
+     * @param {number} a - Angle in degrees
+     * @returns {number} - Sine of the angle
+     * @throws {string} NAN error if the argument is not valid
+     */
+    static doSin(a) {
+        if (typeof a === "number") {
+            return Math.sin((a * Math.PI) / 180);
+        } else {
+            throw "NanError";
+        }
+    }
+
+    /**
+     * Returns the cosine of an angle in degrees.
+     *
+     * @static
+     * @param {number} a - Angle in degrees
+     * @returns {number} - Cosine of the angle
+     * @throws {string} NAN error if the argument is not valid
+     */
+    static doCos(a) {
+        if (typeof a === "number") {
+            return Math.cos((a * Math.PI) / 180);
+        } else {
+            throw "NanError";
+        }
+    }
+
+    /**
+     * Returns the natural logarithm of a number.
+     *
+     * @static
+     * @param {number} a
+     * @returns {number} - Natural logarithm of a
+     * @throws {string} NAN error if the argument is not valid or non-positive
+     */
+    static doLog(a) {
+        if (typeof a === "number") {
+            if (a <= 0) {
+                throw "NanError";
+            }
+            return Math.log(a);
+        } else {
+            throw "NanError";
+        }
+    }
+
+    /**
      * Adds a and b.
      *
      * @static
