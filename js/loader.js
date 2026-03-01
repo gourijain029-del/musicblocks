@@ -16,6 +16,8 @@ const t_ = typeof _ === "function" ? _ : s => s;
 
 const ASSET_VERSION = window.location.protocol === "file:" ? "" : "v=999999_fix7";
 
+const APP_VERSION = window.location.protocol === "file:" ? "" : "v=999999_fix7";
+
 requirejs.config({
     baseUrl: "./",
     urlArgs: ASSET_VERSION,
@@ -286,11 +288,11 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
 
     function updateContent() {
         if (!i18next.isInitialized) return;
-        
+
         if (!cachedElements) {
             cachedElements = document.querySelectorAll("[data-i18n]");
         }
-        
+
         cachedElements.forEach(element => {
             const key = element.getAttribute("data-i18n");
             element.textContent = i18next.t(key);
@@ -326,7 +328,7 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                         escapeValue: false
                     },
                     backend: {
-                        loadPath: "locales/{{lng}}.json?v=3.4.1"
+                        loadPath: "locales/{{lng}}.json" + (APP_VERSION ? "?" + APP_VERSION : "")
                     }
                 },
                 function (err) {
@@ -334,7 +336,6 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                         console.error("i18next init failed:", err);
                     }
                     window.i18next = i18next;
-                    updateContent();
                     resolve(i18next);
                 }
             );
@@ -358,6 +359,8 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
 
             if (document.readyState === "loading") {
                 document.addEventListener("DOMContentLoaded", updateContent);
+            } else {
+                updateContent();
             }
 
             i18next.on("languageChanged", () => {
