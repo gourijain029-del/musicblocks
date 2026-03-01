@@ -190,10 +190,16 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
         }
     );
 
+    let cachedElements = null;
+
     function updateContent() {
         if (!i18next.isInitialized) return;
-        const elements = document.querySelectorAll("[data-i18n]");
-        elements.forEach(element => {
+        
+        if (!cachedElements) {
+            cachedElements = document.querySelectorAll("[data-i18n]");
+        }
+        
+        cachedElements.forEach(element => {
             const key = element.getAttribute("data-i18n");
             element.textContent = i18next.t(key);
         });
@@ -211,7 +217,7 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                         escapeValue: false
                     },
                     backend: {
-                        loadPath: "locales/{{lng}}.json?v=" + Date.now()
+                        loadPath: "locales/{{lng}}.json?v=3.4.1"
                     }
                 },
                 function (err) {
@@ -219,6 +225,7 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                         console.error("i18next init failed:", err);
                     }
                     window.i18next = i18next;
+                    updateContent();
                     resolve(i18next);
                 }
             );
@@ -233,21 +240,14 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                 M.AutoInit();
             }
 
-            const lang = "en";
-            i18next.changeLanguage(lang, function (err) {
-                if (err) {
-                    console.error("Error changing language:", err);
-                }
-                updateContent();
-            });
-
             if (document.readyState === "loading") {
                 document.addEventListener("DOMContentLoaded", updateContent);
-            } else {
-                updateContent();
             }
 
-            i18next.on("languageChanged", updateContent);
+            i18next.on("languageChanged", () => {
+                cachedElements = null;
+                updateContent();
+            });
 
             // Two-phase bootstrap: load core modules first, then application modules
             const waitForGlobals = async (retryCount = 0) => {
