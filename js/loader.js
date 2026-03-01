@@ -11,9 +11,11 @@
 
 /* global requirejs */
 
+const APP_VERSION = window.location.protocol === "file:" ? "" : "v=999999_fix7";
+
 requirejs.config({
     baseUrl: "./",
-    urlArgs: window.location.protocol === "file:" ? "" : "v=999999_fix7",
+    urlArgs: APP_VERSION,
     waitSeconds: 60,
     shim: {
         "easeljs.min": {
@@ -190,16 +192,11 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
         }
     );
 
-    let cachedElements = null;
-
     function updateContent() {
         if (!i18next.isInitialized) return;
-        
-        if (!cachedElements) {
-            cachedElements = document.querySelectorAll("[data-i18n]");
-        }
-        
-        cachedElements.forEach(element => {
+
+        const elements = document.querySelectorAll("[data-i18n]");
+        elements.forEach(element => {
             const key = element.getAttribute("data-i18n");
             element.textContent = i18next.t(key);
         });
@@ -217,7 +214,7 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                         escapeValue: false
                     },
                     backend: {
-                        loadPath: "locales/{{lng}}.json?v=3.4.1"
+                        loadPath: "locales/{{lng}}.json" + (APP_VERSION ? "?" + APP_VERSION : "")
                     }
                 },
                 function (err) {
@@ -225,7 +222,6 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                         console.error("i18next init failed:", err);
                     }
                     window.i18next = i18next;
-                    updateContent();
                     resolve(i18next);
                 }
             );
@@ -240,14 +236,21 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                 M.AutoInit();
             }
 
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", updateContent);
-            }
-
-            i18next.on("languageChanged", () => {
-                cachedElements = null;
+            const lang = "en";
+            i18next.changeLanguage(lang, function (err) {
+                if (err) {
+                    console.error("Error changing language:", err);
+                }
                 updateContent();
             });
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", updateContent);
+            } else {
+                updateContent();
+            }
+
+            i18next.on("languageChanged", updateContent);
 
             // Two-phase bootstrap: load core modules first, then application modules
             const waitForGlobals = async (retryCount = 0) => {
@@ -336,7 +339,7 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                     console.error("Core bootstrap failed:", err);
                     alert(
                         "Failed to initialize Music Blocks core. Please refresh the page.\n\nError: " +
-                            (err.message || err)
+                        (err.message || err)
                     );
                 }
             );

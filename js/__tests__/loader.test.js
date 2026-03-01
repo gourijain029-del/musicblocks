@@ -111,6 +111,7 @@ describe("loader.js coverage", () => {
             expect.objectContaining({ lng: "en" }),
             expect.any(Function)
         );
+        expect(mockI18next.changeLanguage).toHaveBeenCalledWith("en", expect.any(Function));
         expect(window.i18next).toBe(mockI18next);
 
         const title = document.querySelector('[data-i18n="title"]');
@@ -136,6 +137,15 @@ describe("loader.js coverage", () => {
 
         expect(consoleErrorSpy).toHaveBeenCalledWith("i18next init failed:", "Init Failed");
         expect(window.i18next).toBe(mockI18next);
+    });
+
+    test("Handles changeLanguage error", async () => {
+        await loadScript({ langError: true });
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+            "Error changing language:",
+            "Lang Change Failed"
+        );
     });
 
     test("Handles DOMContentLoaded when document is loading", async () => {
