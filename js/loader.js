@@ -99,6 +99,9 @@ requirejs.config({
             deps: ["utils/utils", "activity/logo", "activity/blocks", "activity/turtles"],
             exports: "Activity"
         },
+        "activity/piemenus": {
+            deps: ["activity/turtle-singer", "utils/utils", "utils/platformstyle"]
+        },
         "materialize": {
             deps: ["jquery"],
             exports: "M"
@@ -336,7 +339,7 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
                     console.error("Core bootstrap failed:", err);
                     alert(
                         "Failed to initialize Music Blocks core. Please refresh the page.\n\nError: " +
-                            (err.message || err)
+                        (err.message || err)
                     );
                 }
             );
