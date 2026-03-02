@@ -28,7 +28,6 @@
     <link rel="preload" href="dist/css/windows.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="lib/materialize-iso.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="css/darkmode.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="css/viral-loops.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="prefetch" as="video" href="loading-animation.webm" type="video/webm">
     <link rel="prefetch" as="video" href="loading-animation.mp4" type="video/mp4">
 
@@ -110,8 +109,10 @@
     <script src="lib/astring.min.js" defer></script>
     <script src="lib/acorn.min.js" defer></script>
     <script src="env.js"></script>
-    <script src="js/ViralLoops.js" defer></script>
 
+    <!-- Performance monitoring and optimization tools -->
+    <script src="js/performance-utils.js" defer></script>
+    <script src="js/performance-monitor.js" defer></script>
 
     <script data-main="js/loader" src="lib/require.js" defer></script>
     <link type="text/css" href="fonts/material-icons.css" rel="stylesheet">
