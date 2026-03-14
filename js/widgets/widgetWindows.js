@@ -244,20 +244,14 @@ class WidgetWindow {
         this._body = this._create("div", "wfWinBody", this._frame);
         this._toolbar = this._create("div", "wfbToolbar", this._body);
 
-        const disableScroll = () => {
-            // Get the current page scroll position
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-            // if any scroll is attempted,
-            // set this to the previous value
-            window.onscroll = () => {
-                window.scrollTo(scrollLeft, scrollTop);
-            };
+        const disableScroll = e => {
+            if (e.cancelable) e.preventDefault();
         };
 
         this._widget = this._create("div", "wfbWidget", this._body);
-        this._widget.addEventListener("wheel", disableScroll, false);
-        this._widget.addEventListener("DOMMouseScroll", disableScroll, false);
+        this._widget.style.overscrollBehavior = "contain";
+        this._widget.addEventListener("wheel", disableScroll, { passive: false });
+        this._widget.addEventListener("DOMMouseScroll", disableScroll, { passive: false });
     }
 
     /**
@@ -310,7 +304,7 @@ class WidgetWindow {
      * @returns {void}
      */
     _docMouseDownHandler(e) {
-        if (e.target === this._frame || this._frame.contains(e.target) || this._fullscreenEnabled) {
+        if (e.target === this._frame || this._frame.contains(e.target) || this._maximized) {
             this._frame.style.opacity = "1";
             this._frame.style.zIndex = "10000";
             window.widgetWindows.focused = this;

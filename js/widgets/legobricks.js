@@ -327,15 +327,15 @@ function LegoWidget() {
         this._scale();
         this.activity.textMsg(
             _("LEGO Bricks - Phrase Maker with") +
+            " " +
+            this.rowLabels.length +
+            " " +
+            _(
+                "pitch rows (sorted by frequency, Instrument:" +
                 " " +
-                this.rowLabels.length +
-                " " +
-                _(
-                    "pitch rows (sorted by frequency, Instrument:" +
-                        " " +
-                        this.selectedInstrument +
-                        ")"
-                )
+                this.selectedInstrument +
+                ")"
+            )
         );
     };
 
@@ -1563,6 +1563,23 @@ function LegoWidget() {
         wrapper.style.height = "100%";
         wrapper.style.overflow = "hidden";
 
+        const onMouseMove = e => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            wrapper.style.left = `${initialX + dx}px`;
+            wrapper.style.top = `${initialY + dy}px`;
+        };
+
+        const onMouseUp = () => {
+            if (isDragging) {
+                isDragging = false;
+                wrapper.style.cursor = "grab";
+                document.removeEventListener("mousemove", onMouseMove);
+                document.removeEventListener("mouseup", onMouseUp);
+            }
+        };
+
         wrapper.onmousedown = e => {
             isDragging = true;
             startX = e.clientX;
@@ -1571,21 +1588,8 @@ function LegoWidget() {
             initialY = parseFloat(wrapper.style.top) || 0;
             wrapper.style.cursor = "grabbing";
             e.preventDefault();
-        };
-
-        document.onmousemove = e => {
-            if (!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            wrapper.style.left = `${initialX + dx}px`;
-            wrapper.style.top = `${initialY + dy}px`;
-        };
-
-        document.onmouseup = () => {
-            if (isDragging) {
-                isDragging = false;
-                wrapper.style.cursor = "grab";
-            }
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
         };
     };
 
@@ -1946,7 +1950,7 @@ function LegoWidget() {
                 x: this.instrumentButton.offsetLeft + this.instrumentButton.offsetWidth / 2,
                 y: this.instrumentButton.offsetTop + this.instrumentButton.offsetHeight / 2,
                 children: [], // Mock children array for setChildIndex
-                setChildIndex: (child, index) => {} // Mock function
+                setChildIndex: (child, index) => { } // Mock function
             },
 
             // Mock text object that the pie menu expects
@@ -2002,7 +2006,7 @@ function LegoWidget() {
             },
 
             // Mock methods needed by piemenu
-            updateCache: () => {},
+            updateCache: () => { },
             updateValue: newValue => {
                 // Update the instrument when selection is made
                 this.selectedInstrument = newValue;
@@ -2033,7 +2037,7 @@ function LegoWidget() {
             // Update the instrument when text is set by pie menu
             const newInstrument =
                 voiceValues[
-                    voiceLabels.findIndex(label => label.toLowerCase() === newText.toLowerCase())
+                voiceLabels.findIndex(label => label.toLowerCase() === newText.toLowerCase())
                 ] || newText.toLowerCase();
 
             this.selectedInstrument = newInstrument;
