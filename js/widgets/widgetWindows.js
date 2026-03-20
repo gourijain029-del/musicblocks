@@ -221,7 +221,11 @@ class WidgetWindow {
         this._rafTicking = true;
 
         requestAnimationFrame(() => {
-            if (this._fullscreenEnabled && this._frame.style.top === "64px") {
+            const nav = document.querySelector("nav");
+            const navHeight = nav && nav.offsetHeight > 0 ? nav.offsetHeight : 64;
+            const topValue = `${navHeight}px`;
+
+            if (this._fullscreenEnabled && this._frame.style.top === topValue) {
                 this._overlay(true);
             } else {
                 this._overlay(false);
@@ -236,12 +240,14 @@ class WidgetWindow {
 
     _overlay(add) {
         if (add) {
+            const nav = document.querySelector("nav");
+            const navHeight = nav && nav.offsetHeight > 0 ? nav.offsetHeight : 64;
             this._frame.style.zIndex = "10";
             this._overlayframe.style.left = "0";
             this._overlayframe.style.zIndex = "1";
-            this._overlayframe.style.top = "64px";
+            this._overlayframe.style.top = `${navHeight}px`;
             this._overlayframe.style.width = "100vw";
-            this._overlayframe.style.height = "calc(100vh - 64px)";
+            this._overlayframe.style.height = `calc(100vh - ${navHeight}px)`;
             this._overlayframe.style.border = "0.25vw solid black";
             this._overlayframe.style.backgroundColor = "var(--overlay-bg)";
         } else {
@@ -274,7 +280,11 @@ class WidgetWindow {
      */
     _dragTopHandler(e) {
         this._dragging = false;
-        if (this._fullscreenEnabled && this._frame.style.top === "64px" && !this._maximized) {
+        const nav = document.querySelector("nav");
+        const navHeight = nav && nav.offsetHeight > 0 ? nav.offsetHeight : 64;
+        const topValue = `${navHeight}px`;
+
+        if (this._fullscreenEnabled && this._frame.style.top === topValue && !this._maximized) {
             this._maximize();
             this.takeFocus();
             this.onmaximize();
@@ -449,21 +459,24 @@ class WidgetWindow {
      * @returns {WidgetWindow} this
      */
     sendToCenter() {
+        const nav = document.querySelector("nav");
+        const navHeight = nav && nav.offsetHeight > 0 ? nav.offsetHeight : 64;
         const canvas = docById("myCanvas");
         const fRect = this._frame.getBoundingClientRect();
-        const cRect = canvas.getBoundingClientRect();
+        const cRect = canvas
+            ? canvas.getBoundingClientRect()
+            : { width: window.innerWidth, height: window.innerHeight };
 
-        if (cRect.width === 0 || cRect.height === 0) {
+        if (!cRect || cRect.width === 0 || cRect.height === 0) {
             // The canvas isn't shown so we set some approximate numbers
             this.setPosition(200, 140);
             return this;
         }
 
-        const navHeight = document.querySelector("nav").offsetHeight;
-        this.setPosition(
-            (cRect.width - fRect.width) / 2,
-            (cRect.height - fRect.height + navHeight) / 2
-        );
+        const x = Math.max(0, (cRect.width - fRect.width) / 2);
+        const y = Math.max(navHeight, (cRect.height - fRect.height + navHeight) / 2);
+
+        this.setPosition(x, y);
 
         return this;
     }
@@ -493,6 +506,8 @@ class WidgetWindow {
      * @returns {void}
      */
     _maximize() {
+        const nav = document.querySelector("nav");
+        const navHeight = nav && nav.offsetHeight > 0 ? nav.offsetHeight : 64;
         this._maxminIcon.setAttribute("src", "header-icons/icon-contract.svg");
         this._maximized = true;
         this.unroll();
@@ -500,9 +515,9 @@ class WidgetWindow {
 
         this._savedPos = [this._frame.style.left, this._frame.style.top];
         this._frame.style.width = "100vw";
-        this._frame.style.height = "calc(100vh - 64px)";
+        this._frame.style.height = `calc(100vh - ${navHeight}px)`;
         this._frame.style.left = "0";
-        this._frame.style.top = "64px";
+        this._frame.style.top = `${navHeight}px`;
     }
 
     /**
@@ -589,9 +604,11 @@ class WidgetWindow {
      * @returns {WidgetWindow} this
      */
     setPosition(x, y) {
+        const nav = document.querySelector("nav");
+        const navHeight = nav && nav.offsetHeight > 0 ? nav.offsetHeight : 64;
         this._frame.style.left = `${x}px`;
-        this._frame.style.top = `${Math.max(y, 64)}px`;
-        window.widgetWindows._posCache[this._key] = [x, Math.max(y, 64)];
+        this._frame.style.top = `${Math.max(y, navHeight)}px`;
+        window.widgetWindows._posCache[this._key] = [x, Math.max(y, navHeight)];
         return this;
     }
 
