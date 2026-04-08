@@ -42,7 +42,6 @@ class JSEditor {
         );
         this.widgetWindow.clear();
         this.widgetWindow.show();
-        this.widgetWindow.sendToCenter();
 
         /** topmost DOM container for the widget contents */
         this._editor = document.createElement("div");
@@ -69,6 +68,7 @@ class JSEditor {
 
         this._setup();
         this._setLinesCount(this._code);
+        this.widgetWindow.sendToCenter();
     }
 
     /**
