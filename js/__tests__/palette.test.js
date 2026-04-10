@@ -1,4 +1,3 @@
-/* global MULTIPALETTES, platformColor, docById, TEXTWIDTH */
 /**
  * @license
  * MusicBlocks v3.7.0
