@@ -116,7 +116,7 @@ class LocalCard {
         if (this.ProjectData.ProjectImage !== null) imageSrc = this.ProjectData.ProjectImage;
         else {
             imageSrc =
-                Planet.IsMusicBlocks == 1 ? this.PlaceholderMBImage : this.PlaceholderTBImage;
+                Planet.IsMusicBlocks === 1 ? this.PlaceholderMBImage : this.PlaceholderTBImage;
         }
 
         const imageId = `local-project-image-${this.id}`;
@@ -168,15 +168,17 @@ class LocalCard {
         });
 
         // set viral share button listener
-        // eslint-disable-next-line no-unused-vars
-        frag.getElementById(`local-project-viral-share-${this.id}`).addEventListener("click", evt => {
-            if (typeof window.viralLoops !== 'undefined') {
-                const projectTitle = this.ProjectData.ProjectName || 'Music Blocks Project';
-                const projectImage = this.ProjectData.ProjectImage;
-                const projectId = this.ProjectData.PublishedData ? this.id : null;
-                window.viralLoops.showShareModal(projectTitle, projectId, projectImage);
+        frag.getElementById(`local-project-viral-share-${this.id}`).addEventListener(
+            "click",
+            evt => {
+                if (typeof window.viralLoops !== "undefined") {
+                    const projectTitle = this.ProjectData.ProjectName || "Music Blocks Project";
+                    const projectImage = this.ProjectData.ProjectImage;
+                    const projectId = this.ProjectData.PublishedData ? this.id : null;
+                    window.viralLoops.showShareModal(projectTitle, projectId, projectImage);
+                }
             }
-        });
+        );
 
         // set duplicate button listener
 

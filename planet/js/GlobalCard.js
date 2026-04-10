@@ -175,7 +175,7 @@ class GlobalCard {
         frag.getElementById(`global-project-share-${this.id}`).addEventListener("click", evt => {
             const s = document.getElementById(`global-sharebox-${this.id}`);
 
-            if (s.style.display == "none") {
+            if (s.style.display === "none") {
                 s.style.display = "initial";
                 hideOnClickOutside(
                     [document.getElementById(`global-share-${this.id}`)],
@@ -185,14 +185,16 @@ class GlobalCard {
         });
 
         // set viral share button listener
-        // eslint-disable-next-line no-unused-vars
-        frag.getElementById(`global-project-viral-share-${this.id}`).addEventListener("click", evt => {
-            if (typeof window.viralLoops !== 'undefined') {
-                const projectTitle = this.ProjectData.ProjectName || 'Music Blocks Project';
-                const projectImage = this.ProjectData.ProjectImage;
-                window.viralLoops.showShareModal(projectTitle, this.id, projectImage);
+        frag.getElementById(`global-project-viral-share-${this.id}`).addEventListener(
+            "click",
+            evt => {
+                if (typeof window.viralLoops !== "undefined") {
+                    const projectTitle = this.ProjectData.ProjectName || "Music Blocks Project";
+                    const projectImage = this.ProjectData.ProjectImage;
+                    window.viralLoops.showShareModal(projectTitle, this.id, projectImage);
+                }
             }
-        });
+        );
 
         // set share checkbox listener
 
@@ -229,14 +231,12 @@ class GlobalCard {
         this.clipboard = new ClipboardJS(`.copyshareurl[data-clipboard-text*="${this.id}"]`);
 
         this.clipboard.on("success", e => {
-            // eslint-disable-next-line no-console
             console.info("Copied:", e.text);
             e.clearSelection();
         });
 
         this.clipboard.on("error", e => {
             alert("Failed to copy!");
-            // eslint-disable-next-line no-console
             console.error("Failed to copy:", e.action);
         });
     }
