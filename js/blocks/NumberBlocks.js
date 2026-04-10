@@ -322,7 +322,11 @@ function setupNumberBlocks(activity) {
         constructor() {
             super("sin");
             this.setPalette("number", activity);
-            this.setHelpString([_("The Sin block returns the sine of an angle in degrees."), "documentation", ""]);
+            this.setHelpString([
+                _("The Sin block returns the sine of an angle in degrees."),
+                "documentation",
+                ""
+            ]);
 
             this.formBlock({
                 name: _("sin"),
@@ -366,7 +370,11 @@ function setupNumberBlocks(activity) {
         constructor() {
             super("cos");
             this.setPalette("number", activity);
-            this.setHelpString([_("The Cos block returns the cosine of an angle in degrees."), "documentation", ""]);
+            this.setHelpString([
+                _("The Cos block returns the cosine of an angle in degrees."),
+                "documentation",
+                ""
+            ]);
 
             this.formBlock({
                 name: _("cos"),
@@ -410,7 +418,11 @@ function setupNumberBlocks(activity) {
         constructor() {
             super("log");
             this.setPalette("number", activity);
-            this.setHelpString([_("The Log block returns the natural logarithm."), "documentation", ""]);
+            this.setHelpString([
+                _("The Log block returns the natural logarithm."),
+                "documentation",
+                ""
+            ]);
 
             this.formBlock({
                 name: _("log"),
@@ -917,9 +929,7 @@ function setupNumberBlocks(activity) {
                     return MathUtility.doPlus(a, b);
                 } catch (e) {
                     activity.errorMsg(NOINPUTERRORMSG, blk);
-                    // eslint-disable-next-line no-console
                     console.debug(a + " " + b);
-                    // eslint-disable-next-line no-console
                     console.debug(e);
                     if (!isNaN(a)) {
                         return a;
