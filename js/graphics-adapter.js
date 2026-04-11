@@ -7,7 +7,7 @@
 
 (function () {
     // Ensure we are in a browser environment.
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Create a namespace similar to the original CreateJS library.
     window.createjs = window.createjs || {};
@@ -28,7 +28,7 @@
         }
         // In CreateJS the Stage has an `update` method that forces a render. PixiJS
         // renders automatically each tick, so we provide a no‑op for compatibility.
-        update() { }
+        update() {}
         // Expose the ticker so existing code that does `stage.ticker.add(...)`
         // continues to work.
         get ticker() {
@@ -48,7 +48,8 @@
     class Bitmap extends PIXI.Sprite {
         constructor(image) {
             // `image` can be a URL string or an HTMLImageElement.
-            const texture = typeof image === 'string' ? PIXI.Texture.from(image) : PIXI.Texture.from(image);
+            const texture =
+                typeof image === "string" ? PIXI.Texture.from(image) : PIXI.Texture.from(image);
             super(texture);
         }
         set image(img) {
@@ -79,6 +80,6 @@
         // Helper that mirrors `createjs.Tween.get(target).to(...)` usage.
         to(target, vars) {
             return gsap.to(target, vars);
-        },
+        }
     };
 })();
