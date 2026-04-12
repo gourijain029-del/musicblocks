@@ -969,6 +969,14 @@ class SVG {
             "bb|" +
             this._scale +
             "|" +
+            this._fill +
+            "|" +
+            this._stroke +
+            "|" +
+            this._strokeWidth +
+            "|" +
+            platformColor.blockText +
+            "|" +
             this._expandX +
             "|" +
             this._expandY +
@@ -1344,6 +1352,14 @@ class SVG {
             "boolcmp|" +
             this._scale +
             "|" +
+            this._fill +
+            "|" +
+            this._stroke +
+            "|" +
+            this._strokeWidth +
+            "|" +
+            platformColor.blockText +
+            "|" +
             this._expandX +
             "|" +
             this._expandY +
@@ -1468,6 +1484,14 @@ class SVG {
         const cacheKey =
             "bc|" +
             this._scale +
+            "|" +
+            this._fill +
+            "|" +
+            this._stroke +
+            "|" +
+            this._strokeWidth +
+            "|" +
+            platformColor.blockText +
             "|" +
             this._expandX +
             "|" +
@@ -1708,6 +1732,14 @@ class SVG {
         const cacheKey =
             "ac|" +
             this._scale +
+            "|" +
+            this._fill +
+            "|" +
+            this._stroke +
+            "|" +
+            this._strokeWidth +
+            "|" +
+            platformColor.blockText +
             "|" +
             this._expandX +
             "|" +
