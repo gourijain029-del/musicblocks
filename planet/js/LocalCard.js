@@ -116,7 +116,7 @@ class LocalCard {
         if (this.ProjectData.ProjectImage !== null) imageSrc = this.ProjectData.ProjectImage;
         else {
             imageSrc =
-                Planet.IsMusicBlocks == 1 ? this.PlaceholderMBImage : this.PlaceholderTBImage;
+                Planet.IsMusicBlocks === 1 ? this.PlaceholderMBImage : this.PlaceholderTBImage;
         }
 
         const imageId = `local-project-image-${this.id}`;
@@ -168,7 +168,7 @@ class LocalCard {
         });
 
         // set viral share button listener
-        // eslint-disable-next-line no-unused-vars
+         
         frag.getElementById(`local-project-viral-share-${this.id}`).addEventListener(
             "click",
             evt => {
