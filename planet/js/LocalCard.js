@@ -168,7 +168,7 @@ class LocalCard {
         });
 
         // set viral share button listener
-         
+
         frag.getElementById(`local-project-viral-share-${this.id}`).addEventListener(
             "click",
             evt => {

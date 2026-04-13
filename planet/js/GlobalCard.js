@@ -185,7 +185,7 @@ class GlobalCard {
         });
 
         // set viral share button listener
-         
+
         frag.getElementById(`global-project-viral-share-${this.id}`).addEventListener(
             "click",
             evt => {
@@ -232,14 +232,13 @@ class GlobalCard {
         this.clipboard = new ClipboardJS(`.copyshareurl[data-clipboard-text*="${this.id}"]`);
 
         this.clipboard.on("success", e => {
-             
             console.info("Copied:", e.text);
             e.clearSelection();
         });
 
         this.clipboard.on("error", e => {
             alert("Failed to copy!");
-             
+
             console.error("Failed to copy:", e.action);
         });
     }
