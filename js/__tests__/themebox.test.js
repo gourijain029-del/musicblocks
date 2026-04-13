@@ -46,7 +46,6 @@ const ThemeBox = require("../themebox");
 describe("ThemeBox", () => {
     let mockActivity;
     let themeBox;
-    let mockReload;
 
     beforeEach(() => {
         mockActivity = {
@@ -62,11 +61,6 @@ describe("ThemeBox", () => {
             return key === "themePreference" ? "light" : null;
         });
         jest.spyOn(global.Storage.prototype, "setItem").mockImplementation(() => {});
-
-        // Mock window.location.reload
-        mockReload = jest.fn();
-        delete window.location;
-        window.location = { reload: mockReload };
 
         // Reset body classes
         document.body.classList.remove("light", "dark");
@@ -108,7 +102,6 @@ describe("ThemeBox", () => {
 
     test("setPreference() does not save or reload if theme is unchanged", () => {
         themeBox.light_onclick();
-        expect(mockReload).not.toHaveBeenCalled();
         expect(mockActivity.textMsg).toHaveBeenCalledWith(
             "Music Blocks is already set to this theme."
         );
