@@ -332,16 +332,16 @@ class ThemeBox {
             this.activity.refreshCanvas();
         }
 
+        // Clear SVG cache to force regeneration with new theme colors
+        if (typeof window.__svgCache !== "undefined") {
+            window.__svgCache.clear();
+        }
+
         // Refresh all blocks to update their colors
         if (this.activity.blocks) {
             for (const blockId in this.activity.blocks.blockList) {
                 const block = this.activity.blocks.blockList[blockId];
                 if (block && block.protoblock && block.protoblock.palette) {
-                    // Redraw block to update other colors
-                    if (typeof block.regenerateArtwork === "function") {
-                        // Ensure blockfactory uses the correct theme information
-                        block.regenerateArtwork(false);
-                    }
                     // Update text color
                     if (block.text) {
                         block.text.color = window.platformColor.blockText;
@@ -349,8 +349,18 @@ class ThemeBox {
                     if (block.collapseText) {
                         block.collapseText.color = window.platformColor.blockText;
                     }
+                    // Regenerate artwork to pick up new theme colors from cleared cache
+                    if (typeof block.regenerateArtwork === "function") {
+                        block.regenerateArtwork(block.collapsed);
+                    }
+                    // Update cache immediately after regeneration
+                    if (typeof block.updateCache === "function") {
+                        block.updateCache();
+                    }
                 }
             }
+            // Final canvas refresh
+            this.activity.refreshCanvas();
         }
 
         // Update toolbar icon for current theme
@@ -580,8 +590,9 @@ class ThemeBox {
                 console.warn("Could not save theme preference:", e);
             }
 
-            // Apply theme instantly instead of reloading
-            this.applyThemeInstantly();
+            // Reload page to ensure all blocks update correctly
+            // This is more reliable than trying to regenerate artwork asynchronously
+            window.location.reload();
         }
     }
 }
