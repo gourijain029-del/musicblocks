@@ -8116,6 +8116,13 @@ class Activity {
             this.toolbar.renderPlanetIcon(this.planet, doOpenSamples);
             this.toolbar.renderMenuIcon(showHideAuxMenu);
             this.toolbar.renderHelpIcon(showHelp, showKeyboardShortcuts);
+            this.toolbar.renderViralShareIcon(() => {
+                if (window.viralLoops) {
+                    const projectTitle =
+                        this.storage.getItem("mb_project_name") || _("Music Blocks Project");
+                    window.viralLoops.showShareModal(projectTitle);
+                }
+            });
             this.toolbar.renderModeSelectIcon(
                 doSwitchMode,
                 () => doRecordButton(this),

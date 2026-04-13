@@ -96,6 +96,7 @@ class Toolbar {
                 ["helpIcon", _("Help and shortcuts")],
                 ["helpGuideItem", _("Help"), "innerHTML"],
                 ["shortcutsGuideItem", _("Keyboard shortcuts"), "innerHTML"],
+                ["viralShareButton", _("Share your project")],
                 ["runSlowlyIcon", _("Run slowly")],
                 ["runStepByStepIcon", _("Run step by step")],
                 ["displayStatsIcon", _("Display statistics")],
@@ -168,6 +169,7 @@ class Toolbar {
                 _("Help and shortcuts"),
                 _("Help"),
                 _("Keyboard shortcuts"),
+                _("Share your project"),
                 _("Run slowly"),
                 _("Run step by step"),
                 _("Display statistics"),
@@ -2668,6 +2670,22 @@ class FocusCycleManager {
 
     _announce(msg) {
         if (this._liveRegion) this._liveRegion.textContent = msg;
+    }
+
+    /**
+     * Renders the viral share icon with the provided onclick handler.
+     *
+     * @public
+     * @param {Function} onclick - The onclick handler for the viral share icon.
+     * @returns {void}
+     */
+    renderViralShareIcon(onclick) {
+        const shareIcon = docById("viralShareButton");
+        if (shareIcon) {
+            shareIcon.onclick = () => {
+                onclick(this.activity);
+            };
+        }
     }
 }
 
