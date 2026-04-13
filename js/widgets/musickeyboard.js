@@ -1429,6 +1429,12 @@ function MusicKeyboard(activity) {
         }
 
         let row, isMouseDown;
+
+        this._matrixMouseUpListener = () => {
+            isMouseDown = false;
+        };
+        document.addEventListener("mouseup", this._matrixMouseUpListener);
+
         for (let i = 0; i < this.layout.length; i++) {
             // The buttons get added to the embedded table.
             row = docById("mkb" + i);
@@ -1468,10 +1474,6 @@ function MusicKeyboard(activity) {
                             this._setNotes(j, true);
                         }
                     }
-                };
-
-                cell.onmouseup = function () {
-                    isMouseDown = false;
                 };
             }
         }

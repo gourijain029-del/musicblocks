@@ -1236,16 +1236,27 @@ describe("Palettes Class", () => {
         test("setupGrabScroll updates scrollTop on drag", () => {
             const paletteList = { scrollTop: 100 };
             document.body.style.cursor = "default";
+            document.addEventListener = jest.fn();
+            document.removeEventListener = jest.fn();
 
             palettes.add("test");
             const palette = palettes.dict.test;
             palette.setupGrabScroll(paletteList);
 
+            // mousedown registers document listeners for mousemove and mouseup
             paletteList.onmousedown({ clientY: 10 });
-            paletteList.onmousemove({ clientY: 5 });
 
+            const mouseMoveGrab = document.addEventListener.mock.calls.find(
+                call => call[0] === "mousemove"
+            )[1];
+            const mouseUpGrab = document.addEventListener.mock.calls.find(
+                call => call[0] === "mouseup"
+            )[1];
+
+            mouseMoveGrab({ clientY: 5 });
             expect(paletteList.scrollTop).toBe(105);
-            paletteList.onmouseup();
+
+            mouseUpGrab();
             expect(document.body.style.cursor).toBe("default");
         });
 
@@ -1675,7 +1686,11 @@ describe("Palettes Class", () => {
                 preventDefault: jest.fn()
             });
 
-            img.onmouseup({});
+            // mouseup handler is registered on document (not img.onmouseup) in the PR
+            const mouseUpHandler = document.addEventListener.mock.calls.find(
+                call => call[0] === "mouseup"
+            )[1];
+            mouseUpHandler({});
         });
 
         test("_showMenuItems handles touch drag", () => {
@@ -1752,7 +1767,12 @@ describe("Palettes Class", () => {
                 touches: [{ clientX: 12, clientY: 22 }],
                 preventDefault: jest.fn()
             });
-            img.ontouchend({});
+
+            // touchend handler is registered on document (not img.ontouchend) in the PR
+            const touchEndHandler = document.addEventListener.mock.calls.find(
+                call => call[0] === "touchend"
+            )[1];
+            touchEndHandler({});
         });
 
         test("_showMenuItems hides palette when mobile", () => {

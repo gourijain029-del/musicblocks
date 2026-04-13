@@ -4107,7 +4107,16 @@ class PhraseMaker {
             }
         }
 
-        let isMouseDown;
+        if (this._matrixMouseUpListener) {
+            document.removeEventListener("mouseup", this._matrixMouseUpListener);
+        }
+
+        let isMouseDown = false;
+        this._matrixMouseUpListener = () => {
+            isMouseDown = false;
+        };
+        document.addEventListener("mouseup", this._matrixMouseUpListener);
+
         for (let i = 0; i < rowCount; i++) {
             // The buttons get added to the embedded table.
             row = this._rows[i];
@@ -4116,8 +4125,6 @@ class PhraseMaker {
                 // Give each clickable cell a unique id
                 cell.setAttribute("data-i", i);
                 cell.setAttribute("data-j", j);
-
-                isMouseDown = false;
 
                 cell.onmousedown = evt => {
                     isMouseDown = true;
@@ -4146,10 +4153,6 @@ class PhraseMaker {
                             if (!this._noteBlocks) this._setNotes(j, i, true);
                         }
                     }
-                };
-
-                cell.onmouseup = () => {
-                    isMouseDown = false;
                 };
             }
         }

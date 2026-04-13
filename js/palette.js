@@ -1625,6 +1625,14 @@ class Palette {
             img.ondragstart = () => false;
 
             const down = event => {
+                // Ensure a clear cleanup lifecycle: flush any pending or stalled global listeners
+                if (img._upHandler) {
+                    document.removeEventListener("mouseup", img._upHandler);
+                    document.removeEventListener("touchend", img._upHandler);
+                    document.removeEventListener("mousemove", img._moveHandler);
+                    document.removeEventListener("touchmove", img._moveHandler);
+                }
+
                 // (1) prepare to moving: make absolute and on top by z-index
                 const posit = img.style.position;
                 const zInd = img.style.zIndex;
@@ -1657,6 +1665,7 @@ class Palette {
                     }
                     moveAt(x, y);
                 };
+                img._moveHandler = onMouseMove;
                 onMouseMove(event);
 
                 document.addEventListener("touchmove", onMouseMove, { passive: false });
@@ -1667,8 +1676,10 @@ class Palette {
                     document.body.style.cursor = "default";
                     document.removeEventListener("mousemove", onMouseMove);
                     document.removeEventListener("touchmove", onMouseMove);
-                    img.onmouseup = null;
-                    img.ontouchend = null;
+                    document.removeEventListener("mouseup", up);
+                    document.removeEventListener("touchend", up);
+                    img._upHandler = null;
+                    img._moveHandler = null;
 
                     const x = parseInt(img.style.left);
                     const y = parseInt(img.style.top);
@@ -1692,8 +1703,9 @@ class Palette {
                     );
                 };
 
-                img.ontouchend = up;
-                img.onmouseup = up;
+                img._upHandler = up;
+                document.addEventListener("touchend", up);
+                document.addEventListener("mouseup", up);
             };
 
             img.ontouchstart = down;
@@ -1716,7 +1728,8 @@ class Palette {
         let posY, top;
 
         const mouseUpGrab = () => {
-            // paletteList.onmousemove = null;
+            document.removeEventListener("mousemove", mouseMoveGrab);
+            document.removeEventListener("mouseup", mouseUpGrab);
             document.body.style.cursor = "default";
         };
 
@@ -1727,12 +1740,15 @@ class Palette {
         };
 
         const mouseDownGrab = event => {
+            // Clean up any stray listeners to avoid cumulative memory leaks
+            document.removeEventListener("mousemove", mouseMoveGrab);
+            document.removeEventListener("mouseup", mouseUpGrab);
+
             posY = event.clientY;
             top = paletteList.scrollTop;
 
-            paletteList.onmousemove = mouseMoveGrab;
-            paletteList.onmouseup = mouseUpGrab;
-            paletteList.onmouseleave = mouseUpGrab;
+            document.addEventListener("mousemove", mouseMoveGrab);
+            document.addEventListener("mouseup", mouseUpGrab);
         };
 
         paletteList.onmousedown = mouseDownGrab;
