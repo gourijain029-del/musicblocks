@@ -8088,7 +8088,7 @@ class Activity {
             this.save = new SaveInterface(this);
 
             // Initialize viral loops for social sharing and growth features
-            if (typeof ViralLoops !== 'undefined') {
+            if (typeof ViralLoops !== "undefined") {
                 window.viralLoops = new ViralLoops(this);
             }
 

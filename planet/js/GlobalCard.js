@@ -186,13 +186,16 @@ class GlobalCard {
 
         // set viral share button listener
         // eslint-disable-next-line no-unused-vars
-        frag.getElementById(`global-project-viral-share-${this.id}`).addEventListener("click", evt => {
-            if (typeof window.viralLoops !== 'undefined') {
-                const projectTitle = this.ProjectData.ProjectName || 'Music Blocks Project';
-                const projectImage = this.ProjectData.ProjectImage;
-                window.viralLoops.showShareModal(projectTitle, this.id, projectImage);
+        frag.getElementById(`global-project-viral-share-${this.id}`).addEventListener(
+            "click",
+            evt => {
+                if (typeof window.viralLoops !== "undefined") {
+                    const projectTitle = this.ProjectData.ProjectName || "Music Blocks Project";
+                    const projectImage = this.ProjectData.ProjectImage;
+                    window.viralLoops.showShareModal(projectTitle, this.id, projectImage);
+                }
             }
-        });
+        );
 
         // set share checkbox listener
 

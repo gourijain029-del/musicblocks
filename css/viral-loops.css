@@ -16,8 +16,12 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .viral-share-content {
@@ -111,19 +115,19 @@
 }
 
 .viral-share-btn.twitter {
-    background: #1DA1F2;
+    background: #1da1f2;
 }
 
 .viral-share-btn.facebook {
-    background: #1877F2;
+    background: #1877f2;
 }
 
 .viral-share-btn.whatsapp {
-    background: #25D366;
+    background: #25d366;
 }
 
 .viral-share-btn.email {
-    background: #EA4335;
+    background: #ea4335;
 }
 
 .viral-share-btn.copy {
@@ -180,7 +184,7 @@
 
 .achievement-content i {
     font-size: 32px;
-    color: #FFD700;
+    color: #ffd700;
 }
 
 .achievement-content strong {
@@ -249,17 +253,17 @@
     .viral-share-content {
         padding: 20px;
     }
-    
+
     .viral-share-buttons {
         grid-template-columns: 1fr;
     }
-    
+
     .viral-achievement-notification {
         right: -100%;
         left: 10px;
         max-width: calc(100% - 20px);
     }
-    
+
     .viral-achievement-notification.show {
         right: auto;
         left: 10px;
@@ -271,47 +275,47 @@
     .viral-share-content {
         background: #2a2a2a;
     }
-    
+
     .viral-share-header h3 {
         color: #fff;
     }
-    
+
     .viral-close-btn {
         color: #aaa;
     }
-    
+
     .viral-close-btn:hover {
         color: #fff;
     }
-    
+
     .viral-share-description {
         color: #aaa;
     }
-    
+
     .viral-referral-info {
         background: #333;
     }
-    
+
     .viral-referral-info p {
         color: #aaa;
     }
-    
+
     .viral-referral-info strong {
         color: #fff;
     }
-    
+
     .viral-achievement-item {
         background: #333;
     }
-    
+
     .viral-achievement-item.unlocked {
         background: linear-gradient(135deg, #667eea33 0%, #764ba233 100%);
     }
-    
+
     .viral-achievement-item strong {
         color: #fff;
     }
-    
+
     .viral-achievement-item p {
         color: #aaa;
     }
