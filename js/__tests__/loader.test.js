@@ -50,6 +50,17 @@ describe("loader.js coverage", () => {
         mockRequireJS.mockImplementation((deps, callback) => {
             if (deps.includes("highlight")) {
                 if (callback) callback(null);
+            } else if (deps.includes("jquery") && !deps.includes("i18next")) {
+                // jQuery load — provide mock $ and trigger callback
+                window.jQuery = jest.fn();
+                window.$ = window.jQuery;
+                if (callback) callback(window.jQuery);
+            } else if (deps.includes("materialize")) {
+                // Materialize load — provide mock M and trigger callback
+                const mockM = { AutoInit: jest.fn() };
+                window.M = mockM;
+                window.Materialize = mockM;
+                if (callback) callback(mockM);
             } else if (deps.includes("i18next")) {
                 mockI18next.init.mockImplementation((config, cb) => {
                     if (initError) {
