@@ -54,6 +54,13 @@ requirejs.config({
         "p5-sound-adapter": {
             deps: ["p5.sound.min"]
         },
+        "utils/zoomOverlay": {
+            exports: "showZoomOverlay"
+        },
+        "activity/gif-animator": {
+            deps: ["libgif"],
+            exports: "GIFAnimator"
+        },
         "utils/utils": {
             deps: ["utils/platformstyle"],
             exports: "_"
@@ -172,7 +179,7 @@ requirejs.config({
         "jquery-ui": "lib/jquery-ui",
         "materialize": "lib/materialize.min",
         "abc": "lib/abc.min",
-        "libgif": "https://cdn.jsdelivr.net/gh/buzzfeed/libgif-js/libgif",
+        "libgif": "lib/libgif",
         "Tone": "lib/Tone",
         "highlight": "//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min",
         "i18next": [
@@ -257,227 +264,235 @@ requirejs(["i18next", "i18nextHttpBackend"], function (i18next, i18nextHttpBacke
 
     perfTracker.mark("loader.main.start");
 
-    // Use globally-loaded jQuery and Materialize (avoids AMD conflicts)
-    const $ = window.jQuery;
-    // Materialize v0.100.2 (bundled) uses 'Materialize' as global, not 'M'
-    const M = window.Materialize || window.M;
+    // Load jQuery first, then Materialize separately.
+    // Materialize bundles Velocity which calls anonymous define() when it detects
+    // define.amd (set by jQuery). We temporarily hide define so Velocity falls back
+    // to the global path instead of triggering a RequireJS "mismatched define" error.
+    requirejs(["jquery"], function ($) {
+        window.jQuery = window.$ = $;
 
-    // Ensure both M and Materialize are available for compatibility
-    if (typeof M !== "undefined") {
-        window.M = M;
-        window.Materialize = M;
-    }
+        var _define = window.define;
+        window.define = undefined;
+        requirejs(["materialize"], function (M) {
+            window.define = _define;
+            // Materialize v0.100.2 uses 'Materialize' as global, not 'M'
+            window.M = window.Materialize || M;
+            window.Materialize = window.M;
 
-    // Define essential globals for core modules
-    window._THIS_IS_MUSIC_BLOCKS_ = true;
-    window._THIS_IS_TURTLE_BLOCKS_ = false;
+            // Define essential globals for core modules
+            window._THIS_IS_MUSIC_BLOCKS_ = true;
+            window._THIS_IS_TURTLE_BLOCKS_ = false;
 
-    // Load highlight optionally
-    requirejs(
-        ["highlight"],
-        function (hljs) {
-            if (hljs) {
-                window.hljs = hljs;
-                hljs.highlightAll();
-            }
-        },
-        function (err) {
-            console.warn("Highlight.js failed to load, moving on...", err);
-        }
-    );
-
-    function updateContent() {
-        if (!i18next.isInitialized) return;
-        const elements = document.querySelectorAll("[data-i18n]");
-        elements.forEach(element => {
-            const key = element.getAttribute("data-i18n");
-            element.textContent = i18next.t(key);
-        });
-    }
-
-    function resolveInitialLanguage() {
-        try {
-            const savedLanguage = window.localStorage && window.localStorage.languagePreference;
-            if (savedLanguage) {
-                return savedLanguage.startsWith("ja") ? "ja" : savedLanguage;
-            }
-        } catch (e) {
-            // Continue with navigator fallback when storage is unavailable.
-        }
-
-        const browserLanguage = (window.navigator && window.navigator.language) || "en";
-        const normalized = browserLanguage.includes("-")
-            ? browserLanguage.slice(0, browserLanguage.indexOf("-"))
-            : browserLanguage;
-        return normalized || "en";
-    }
-
-    function initializeI18next(lang) {
-        return new Promise(resolve => {
-            i18next.use(i18nextHttpBackend).init(
-                {
-                    lng: lang,
-                    fallbackLng: "en",
-                    keySeparator: false,
-                    nsSeparator: false,
-                    interpolation: {
-                        escapeValue: false
-                    },
-                    backend: {
-                        loadPath: ASSET_VERSION
-                            ? `locales/{{lng}}.json?${ASSET_VERSION}`
-                            : "locales/{{lng}}.json"
-                    }
-                },
-                function (err) {
-                    if (err) {
-                        console.error("i18next init failed:", err);
-                    }
-                    window.i18next = i18next;
-                    resolve(i18next);
-                }
-            );
-        });
-    }
-
-    async function main() {
-        try {
-            const lang = resolveInitialLanguage();
-            await initializeI18next(lang);
-            perfTracker.mark("loader.i18n.ready");
-            perfTracker.measure(
-                "loader.main_to_i18n_ready",
-                "loader.main.start",
-                "loader.i18n.ready"
-            );
-
-            if (typeof M !== "undefined" && M.AutoInit) {
-                M.AutoInit();
-            }
-
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", updateContent);
-            } else {
-                updateContent();
-            }
-
-            i18next.on("languageChanged", updateContent);
-
-            // Two-phase bootstrap: load core modules first, then application modules
-            const waitForGlobals = async (retryCount = 0) => {
-                if (typeof window.createjs === "undefined" && retryCount < 50) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    return waitForGlobals(retryCount + 1);
-                }
-            };
-
-            await waitForGlobals();
-
-            // Only pre-define modules that are loaded via script tags in index.html
-            // These modules are already available as globals before RequireJS loads them
-            const PRELOADED_SCRIPTS = [
-                { name: "easeljs.min", export: () => window.createjs },
-                { name: "tweenjs.min", export: () => window.createjs }
-            ];
-
-            PRELOADED_SCRIPTS.forEach(mod => {
-                if (!requirejs.defined(mod.name) && mod.export && mod.export()) {
-                    define(mod.name, [], function () {
-                        return mod.export();
-                    });
-                }
-            });
-
-            // Note: Other modules like activity/*, utils/* are loaded by RequireJS
-            // from their file paths as configured in requirejs.config().
-            // Do NOT pre-define them here as that prevents RequireJS from loading the actual files.
-
-            const CORE_BOOTSTRAP_MODULES = [
-                "easeljs.min",
-                "tweenjs.min",
-                "preloadjs.min",
-                "utils/platformstyle",
-                "utils/utils",
-                "activity/turtledefs",
-                "activity/block",
-                "activity/blocks",
-                "activity/turtle-singer",
-                "activity/turtle-painter",
-                "activity/turtle",
-                "activity/turtles",
-                "utils/synthutils",
-                "activity/notation",
-                "activity/logo"
-            ];
-
+            // Load highlight optionally
             requirejs(
-                CORE_BOOTSTRAP_MODULES,
-                function () {
-                    perfTracker.mark("loader.core_modules.ready");
-                    perfTracker.measure(
-                        "loader.i18n_to_core_modules_ready",
-                        "loader.i18n.ready",
-                        "loader.core_modules.ready"
-                    );
-
-                    // Give scripts a moment to finish executing and set globals
-                    setTimeout(function () {
-                        // Verify core dependencies are loaded
-                        const verificationStatus = {
-                            createjs: typeof window.createjs !== "undefined",
-                            createDefaultStack: typeof window.createDefaultStack !== "undefined",
-                            Logo: typeof window.Logo !== "undefined",
-                            Blocks: typeof window.Blocks !== "undefined",
-                            Turtles: typeof window.Turtles !== "undefined"
-                        };
-
-                        // Check critical dependencies (only createjs is truly critical)
-                        if (typeof window.createjs === "undefined") {
-                            console.error(
-                                "FATAL: createjs (EaselJS/TweenJS) not found. Cannot proceed."
-                            );
-                            alert(t_("Failed to load EaselJS. Please refresh the page."));
-                            return;
-                        }
-
-                        // Proceed with activity loading
-                        requirejs(
-                            ["activity/activity"],
-                            function () {
-                                // Activity loaded successfully
-                                perfTracker.mark("loader.activity_module.ready");
-                                perfTracker.measure(
-                                    "loader.core_modules_to_activity_module_ready",
-                                    "loader.core_modules.ready",
-                                    "loader.activity_module.ready"
-                                );
-                                perfTracker.measure(
-                                    "loader.total_bootstrap",
-                                    "loader.main.start",
-                                    "loader.activity_module.ready"
-                                );
-                                perfTracker.report();
-                            },
-                            function (err) {
-                                console.error("Failed to load activity/activity:", err);
-                                alert(t_("Failed to load Music Blocks. Please refresh the page."));
-                            }
-                        );
-                    }, 100); // Small delay to allow globals to be set
+                ["highlight"],
+                function (hljs) {
+                    if (hljs) {
+                        window.hljs = hljs;
+                        hljs.highlightAll();
+                    }
                 },
                 function (err) {
-                    console.error("Core bootstrap failed:", err);
-                    alert(
-                        t_(
-                            "Failed to initialize Music Blocks core. Please refresh the page.\n\nError: %s"
-                        ).replace(/%s/g, err.message || err)
-                    );
+                    console.warn("Highlight.js failed to load, moving on...", err);
                 }
             );
-        } catch (e) {
-            console.error("Error in main bootstrap:", e);
-        }
-    }
 
-    main().catch(err => console.error("Main execution failed:", err));
+            function updateContent() {
+                if (!i18next.isInitialized) return;
+                const elements = document.querySelectorAll("[data-i18n]");
+                elements.forEach(element => {
+                    const key = element.getAttribute("data-i18n");
+                    element.textContent = i18next.t(key);
+                });
+            }
+
+            function resolveInitialLanguage() {
+                try {
+                    const savedLanguage =
+                        window.localStorage && window.localStorage.languagePreference;
+                    if (savedLanguage) {
+                        return savedLanguage.startsWith("ja") ? "ja" : savedLanguage;
+                    }
+                } catch (e) {
+                    // Continue with navigator fallback when storage is unavailable.
+                }
+
+                const browserLanguage = (window.navigator && window.navigator.language) || "en";
+                const normalized = browserLanguage.includes("-")
+                    ? browserLanguage.slice(0, browserLanguage.indexOf("-"))
+                    : browserLanguage;
+                return normalized || "en";
+            }
+
+            function initializeI18next(lang) {
+                return new Promise(resolve => {
+                    i18next.use(i18nextHttpBackend).init(
+                        {
+                            lng: lang,
+                            fallbackLng: "en",
+                            keySeparator: false,
+                            nsSeparator: false,
+                            interpolation: {
+                                escapeValue: false
+                            },
+                            backend: {
+                                loadPath: ASSET_VERSION
+                                    ? `locales/{{lng}}.json?${ASSET_VERSION}`
+                                    : "locales/{{lng}}.json"
+                            }
+                        },
+                        function (err) {
+                            if (err) {
+                                console.error("i18next init failed:", err);
+                            }
+                            window.i18next = i18next;
+                            resolve(i18next);
+                        }
+                    );
+                });
+            }
+
+            async function main() {
+                try {
+                    const lang = resolveInitialLanguage();
+                    await initializeI18next(lang);
+                    perfTracker.mark("loader.i18n.ready");
+                    perfTracker.measure(
+                        "loader.main_to_i18n_ready",
+                        "loader.main.start",
+                        "loader.i18n.ready"
+                    );
+
+                    if (typeof M !== "undefined" && M.AutoInit) {
+                        M.AutoInit();
+                    }
+
+                    if (document.readyState === "loading") {
+                        document.addEventListener("DOMContentLoaded", updateContent);
+                    } else {
+                        updateContent();
+                    }
+
+                    i18next.on("languageChanged", updateContent);
+
+                    // Two-phase bootstrap: load core modules first, then application modules
+
+                    const CORE_BOOTSTRAP_MODULES = [
+                        "easeljs.min",
+                        "tweenjs.min",
+                        "preloadjs.min",
+                        "Tone",
+                        "utils/platformstyle",
+                        "utils/utils",
+                        "utils/zoomOverlay",
+                        "libgif",
+                        "activity/turtledefs",
+                        "activity/block",
+                        "activity/blocks",
+                        "activity/gif-animator",
+                        "activity/turtle-singer",
+                        "activity/turtle-painter",
+                        "activity/turtle",
+                        "activity/turtles",
+                        "utils/synthutils",
+                        "activity/notation",
+                        "activity/logo"
+                    ];
+
+                    requirejs(
+                        CORE_BOOTSTRAP_MODULES,
+                        function (
+                            easeljs,
+                            tweenjs,
+                            preloadjs,
+                            Tone,
+                            platformstyle,
+                            utils,
+                            zoomOverlay,
+                            SuperGif
+                        ) {
+                            // Ensure AMD-loaded globals are available on window for activity.js globalsReady check
+                            if (typeof window.Tone === "undefined" && typeof Tone !== "undefined") {
+                                window.Tone = Tone;
+                            }
+                            if (
+                                typeof window.SuperGif === "undefined" &&
+                                typeof SuperGif !== "undefined"
+                            ) {
+                                window.SuperGif = SuperGif;
+                            }
+                            perfTracker.mark("loader.core_modules.ready");
+                            perfTracker.measure(
+                                "loader.i18n_to_core_modules_ready",
+                                "loader.i18n.ready",
+                                "loader.core_modules.ready"
+                            );
+
+                            // Give scripts a moment to finish executing and set globals
+                            setTimeout(function () {
+                                // Verify core dependencies are loaded
+                                const verificationStatus = {
+                                    createjs: typeof window.createjs !== "undefined",
+                                    createDefaultStack:
+                                        typeof window.createDefaultStack !== "undefined",
+                                    Logo: typeof window.Logo !== "undefined",
+                                    Blocks: typeof window.Blocks !== "undefined",
+                                    Turtles: typeof window.Turtles !== "undefined"
+                                };
+
+                                // Check critical dependencies (only createjs is truly critical)
+                                if (typeof window.createjs === "undefined") {
+                                    console.error(
+                                        "FATAL: createjs (EaselJS/TweenJS) not found. Cannot proceed."
+                                    );
+                                    alert(t_("Failed to load EaselJS. Please refresh the page."));
+                                    return;
+                                }
+
+                                // Proceed with activity loading
+                                requirejs(
+                                    ["activity/activity"],
+                                    function () {
+                                        // Activity loaded successfully
+                                        perfTracker.mark("loader.activity_module.ready");
+                                        perfTracker.measure(
+                                            "loader.core_modules_to_activity_module_ready",
+                                            "loader.core_modules.ready",
+                                            "loader.activity_module.ready"
+                                        );
+                                        perfTracker.measure(
+                                            "loader.total_bootstrap",
+                                            "loader.main.start",
+                                            "loader.activity_module.ready"
+                                        );
+                                        perfTracker.report();
+                                    },
+                                    function (err) {
+                                        console.error("Failed to load activity/activity:", err);
+                                        alert(
+                                            t_(
+                                                "Failed to load Music Blocks. Please refresh the page."
+                                            )
+                                        );
+                                    }
+                                );
+                            }, 100); // Small delay to allow globals to be set
+                        },
+                        function (err) {
+                            console.error("Core bootstrap failed:", err);
+                            alert(
+                                t_(
+                                    "Failed to initialize Music Blocks core. Please refresh the page.\n\nError: %s"
+                                ).replace(/%s/g, err.message || err)
+                            );
+                        }
+                    );
+                } catch (e) {
+                    console.error("Error in main bootstrap:", e);
+                }
+            }
+
+            main().catch(err => console.error("Main execution failed:", err));
+        }); // end requirejs(["materialize"], ...)
+    }); // end requirejs(["jquery"], ...)
 });

@@ -157,7 +157,9 @@ let MYDEFINES = [
     "activity/blocks/MediaBlocks",
     "activity/blocks/SensorsBlocks",
     "activity/blocks/EnsembleBlocks",
-    "widgets/widgetWindows"
+    "widgets/widgetWindows",
+    "libgif",
+    "activity/gif-animator"
 ];
 
 /**
