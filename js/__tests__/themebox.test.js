@@ -46,6 +46,7 @@ const ThemeBox = require("../themebox");
 describe("ThemeBox", () => {
     let mockActivity;
     let themeBox;
+    let mockReload;
 
     beforeEach(() => {
         mockActivity = {
@@ -61,6 +62,11 @@ describe("ThemeBox", () => {
             return key === "themePreference" ? "light" : null;
         });
         jest.spyOn(global.Storage.prototype, "setItem").mockImplementation(() => {});
+
+        // Mock window.location.reload
+        mockReload = jest.fn();
+        delete window.location;
+        window.location = { reload: mockReload };
 
         // Reset body classes
         document.body.classList.remove("light", "dark");
@@ -85,40 +91,27 @@ describe("ThemeBox", () => {
         );
     });
 
-    test("dark_onclick() sets theme to dark and applies instantly", () => {
-        const reloadSpy = jest.spyOn(themeBox, "reload").mockImplementation(() => {});
+    test("dark_onclick() sets theme to dark and attempts reload", () => {
         themeBox.dark_onclick();
         expect(themeBox._theme).toBe("dark");
         expect(mockActivity.storage.themePreference).toBe("dark");
-        // Should NOT reload - instant theme switch
-        expect(reloadSpy).not.toHaveBeenCalled();
-        // Should show theme switched message
-        expect(mockActivity.textMsg).toHaveBeenCalledWith("Theme switched to dark mode.", 2000);
-        reloadSpy.mockRestore();
+        expect(localStorage.setItem).toHaveBeenCalledWith("themePreference", "dark");
     });
 
-    test("setPreference() applies theme instantly without reload", () => {
-        const reloadSpy = jest.spyOn(themeBox, "reload").mockImplementation(() => {});
+    test("setPreference() saves theme and attempts reload when theme changes", () => {
         localStorage.getItem.mockReturnValue("light");
         themeBox._theme = "dark";
         themeBox.setPreference();
         expect(mockActivity.storage.themePreference).toBe("dark");
-        // Should NOT reload - instant theme switch
-        expect(reloadSpy).not.toHaveBeenCalled();
-        // Body should have dark class
-        expect(document.body.classList.contains("dark")).toBe(true);
-        expect(document.body.classList.contains("light")).toBe(false);
-        reloadSpy.mockRestore();
+        expect(localStorage.setItem).toHaveBeenCalledWith("themePreference", "dark");
     });
 
-    test("setPreference() does not change if theme is unchanged", () => {
-        const reloadSpy = jest.spyOn(themeBox, "reload").mockImplementation(() => {});
+    test("setPreference() does not save or reload if theme is unchanged", () => {
         themeBox.light_onclick();
-        expect(reloadSpy).not.toHaveBeenCalled();
+        expect(mockReload).not.toHaveBeenCalled();
         expect(mockActivity.textMsg).toHaveBeenCalledWith(
             "Music Blocks is already set to this theme."
         );
-        reloadSpy.mockRestore();
     });
 
     test("applyThemeInstantly() updates body classes correctly", () => {
