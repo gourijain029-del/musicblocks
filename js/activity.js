@@ -2728,6 +2728,7 @@ class Activity {
                 [null, null],
                 [null, null]
             ]; // Array to track two fingers (Y and X coordinates)
+            let initialDistance = null;
 
             /**
              * Handles touch start event on the canvas.
@@ -2741,6 +2742,9 @@ class Activity {
                             initialTouches[i][0] = event.touches[i].clientY;
                             initialTouches[i][1] = event.touches[i].clientX;
                         }
+                        const dx = event.touches[0].clientX - event.touches[1].clientX;
+                        const dy = event.touches[0].clientY - event.touches[1].clientY;
+                        initialDistance = Math.sqrt(dx * dx + dy * dy);
                     }
                 },
                 { passive: true }
@@ -2754,26 +2758,49 @@ class Activity {
                 "touchmove",
                 event => {
                     if (event.touches.length === 2) {
-                        for (let i = 0; i < 2; i++) {
-                            const touchY = event.touches[i].clientY;
-                            const touchX = event.touches[i].clientX;
+                        const dx = event.touches[0].clientX - event.touches[1].clientX;
+                        const dy = event.touches[0].clientY - event.touches[1].clientY;
+                        const currentDistance = Math.sqrt(dx * dx + dy * dy);
 
-                            if (initialTouches[i][0] !== null && initialTouches[i][1] !== null) {
-                                const deltaY = touchY - initialTouches[i][0];
-                                const deltaX = touchX - initialTouches[i][1];
+                        if (
+                            initialDistance !== null &&
+                            Math.abs(currentDistance - initialDistance) > 10
+                        ) {
+                            const scaleFactor = currentDistance / initialDistance;
+                            if (scaleFactor > 1.1) {
+                                closeAnyOpenMenusAndLabels();
+                                that.doLargerBlocks();
+                                initialDistance = currentDistance;
+                            } else if (scaleFactor < 0.9) {
+                                closeAnyOpenMenusAndLabels();
+                                that.doSmallerBlocks();
+                                initialDistance = currentDistance;
+                            }
+                        } else {
+                            for (let i = 0; i < 2; i++) {
+                                const touchY = event.touches[i].clientY;
+                                const touchX = event.touches[i].clientX;
 
-                                if (deltaY !== 0) {
-                                    closeAnyOpenMenusAndLabels();
-                                    that.blocksContainer.y -= deltaY;
+                                if (
+                                    initialTouches[i][0] !== null &&
+                                    initialTouches[i][1] !== null
+                                ) {
+                                    const deltaY = touchY - initialTouches[i][0];
+                                    const deltaX = touchX - initialTouches[i][1];
+
+                                    if (deltaY !== 0) {
+                                        closeAnyOpenMenusAndLabels();
+                                        that.blocksContainer.y -= deltaY;
+                                    }
+
+                                    if (that.scrollBlockContainer && deltaX !== 0) {
+                                        closeAnyOpenMenusAndLabels();
+                                        that.blocksContainer.x -= deltaX;
+                                    }
+
+                                    initialTouches[i][0] = touchY;
+                                    initialTouches[i][1] = touchX;
                                 }
-
-                                if (that.scrollBlockContainer && deltaX !== 0) {
-                                    closeAnyOpenMenusAndLabels();
-                                    that.blocksContainer.x -= deltaX;
-                                }
-
-                                initialTouches[i][0] = touchY;
-                                initialTouches[i][1] = touchX;
                             }
                         }
 
