@@ -1464,6 +1464,11 @@ function MusicKeyboard(activity) {
                     }
                 };
 
+                cell.ontouchstart = e => {
+                    e.preventDefault();
+                    cell.onmousedown(e.touches[0]);
+                };
+
                 cell.onmouseover = () => {
                     // let obj, i, j;
                     // obj = cell.id.split(":");
@@ -1481,6 +1486,11 @@ function MusicKeyboard(activity) {
                 };
 
                 cell.onmouseup = function () {
+                    isMouseDown = false;
+                };
+
+                cell.ontouchend = function (e) {
+                    e.preventDefault();
                     isMouseDown = false;
                 };
             }

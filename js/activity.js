@@ -919,11 +919,13 @@ class Activity {
                 }
 
                 // Ensures that blocks do not go hide behind the search for blocks div
+                // On mobile editing layout, add extra left margin to clear the palette
+                const mobileLeftMargin = canvasWidth < RESPONSIVE_BREAKPOINT_MOBILE ? 170 : 100;
                 const leftmostX = Math.min(
                     ...group.map(id => activity.blocks.blockList[id].container.x)
                 );
                 if (leftmostX < 0) {
-                    const shiftX = 100 - leftmostX;
+                    const shiftX = mobileLeftMargin - leftmostX;
 
                     group.forEach(blockId => {
                         activity.blocks.blockList[blockId].container.x += shiftX;
@@ -2728,19 +2730,7 @@ class Activity {
                 [null, null],
                 [null, null]
             ]; // Array to track two fingers (Y and X coordinates)
-            let initialDistance = null; // Track initial distance for pinch-to-zoom
-
-            /**
-             * Calculate distance between two touch points
-             * @param {Touch} touch1 - First touch point
-             * @param {Touch} touch2 - Second touch point
-             * @returns {number} Distance between touches
-             */
-            const getTouchDistance = (touch1, touch2) => {
-                const dx = touch1.clientX - touch2.clientX;
-                const dy = touch1.clientY - touch2.clientY;
-                return Math.sqrt(dx * dx + dy * dy);
-            };
+            let initialDistance = null;
 
             /**
              * Handles touch start event on the canvas.
@@ -2754,8 +2744,9 @@ class Activity {
                             initialTouches[i][0] = event.touches[i].clientY;
                             initialTouches[i][1] = event.touches[i].clientX;
                         }
-                        // Store initial distance for pinch-to-zoom
-                        initialDistance = getTouchDistance(event.touches[0], event.touches[1]);
+                        const dx = event.touches[0].clientX - event.touches[1].clientX;
+                        const dy = event.touches[0].clientY - event.touches[1].clientY;
+                        initialDistance = Math.sqrt(dx * dx + dy * dy);
                     }
                 },
                 { passive: true }
@@ -2769,31 +2760,25 @@ class Activity {
                 "touchmove",
                 event => {
                     if (event.touches.length === 2) {
-                        const currentDistance = getTouchDistance(
-                            event.touches[0],
-                            event.touches[1]
-                        );
+                        const dx = event.touches[0].clientX - event.touches[1].clientX;
+                        const dy = event.touches[0].clientY - event.touches[1].clientY;
+                        const currentDistance = Math.sqrt(dx * dx + dy * dy);
 
-                        // Handle pinch-to-zoom
                         if (
                             initialDistance !== null &&
                             Math.abs(currentDistance - initialDistance) > 10
                         ) {
                             const scaleFactor = currentDistance / initialDistance;
-
                             if (scaleFactor > 1.1) {
-                                // Zoom in
                                 closeAnyOpenMenusAndLabels();
                                 that.doLargerBlocks();
-                                initialDistance = currentDistance; // Update for next comparison
+                                initialDistance = currentDistance;
                             } else if (scaleFactor < 0.9) {
-                                // Zoom out
                                 closeAnyOpenMenusAndLabels();
                                 that.doSmallerBlocks();
-                                initialDistance = currentDistance; // Update for next comparison
+                                initialDistance = currentDistance;
                             }
                         } else {
-                            // Handle panning when not pinching
                             for (let i = 0; i < 2; i++) {
                                 const touchY = event.touches[i].clientY;
                                 const touchX = event.touches[i].clientX;
@@ -2835,7 +2820,6 @@ class Activity {
                     initialTouches[i][0] = null;
                     initialTouches[i][1] = null;
                 }
-                initialDistance = null; // Reset pinch distance
             });
 
             /**
@@ -4143,27 +4127,11 @@ class Activity {
             }
 
             const smallSide = Math.min(w, h);
-            let mobileSize;
             if (smallSide < this.cellSize * 9) {
-                mobileSize = true;
-                // Mobile scaling for very small screens
-                if (w < this.cellSize * 10) {
-                    this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.6);
-                } else {
-                    this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.75);
-                }
+                this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.5);
             } else {
-                mobileSize = false;
-                // Desktop scaling logic
-                if (w / 1200 > h / 900) {
-                    this.turtleBlocksScale = Math.min(w / 1200, 1.2);
-                } else {
-                    this.turtleBlocksScale = Math.min(h / 900, 1.2);
-                }
+                this.turtleBlocksScale = 1.0;
             }
-
-            // Ensure scale doesn't go below minimum or above maximum
-            this.turtleBlocksScale = Math.max(0.5, Math.min(this.turtleBlocksScale, 2.0));
 
             this.stage.scaleX = this.turtleBlocksScale;
             this.stage.scaleY = this.turtleBlocksScale;
@@ -4276,10 +4244,9 @@ class Activity {
 
             this.update = true;
 
-            // Hide tooltips on mobile
+            // Use platform.mobile flag consistently to gate mobile-specific UI paths
             if (typeof platform !== "undefined" && platform.mobile) {
-                // palettes.setMobile(true);
-                // palettes.hide();
+                this.palettes.setMobile(true);
                 this.toolbar.disableTooltips($j);
             } else {
                 this.palettes.setMobile(false);
@@ -4290,8 +4257,8 @@ class Activity {
             }
 
             const artcanvas = document.getElementById("overlayCanvas");
-            // Workaround for #795.5
-            if (mobileSize) {
+            // Workaround for #795.5 — double resolution on small screens
+            if (Math.min(w, h) < this.cellSize * 9) {
                 artcanvas.width = w * 2;
                 artcanvas.height = h * 2;
             } else {

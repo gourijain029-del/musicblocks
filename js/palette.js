@@ -746,6 +746,17 @@ class Palettes {
         this.mobile = mobile;
         if (mobile) {
             this._hideMenus();
+            // Close the drawer when tapping outside it
+            document.addEventListener("click", e => {
+                const paletteEl = document.getElementById("palette");
+                if (
+                    paletteEl &&
+                    paletteEl.classList.contains("active") &&
+                    !paletteEl.contains(e.target)
+                ) {
+                    paletteEl.classList.remove("active");
+                }
+            });
         }
 
         return this;
@@ -923,16 +934,14 @@ class Palettes {
     }
 
     showPalette(name) {
-        // For mobile, toggle the palette drawer instead of showing individual palettes
         if (this.mobile) {
-            const palette = document.getElementById("palette");
-            if (palette && palette.classList && palette.classList.contains("mobile-collapsible")) {
-                palette.classList.toggle("active");
-            }
-            return; // Always return early for mobile, regardless of DOM state
+            // On mobile, slide the palette drawer in instead of hiding it
+            const paletteEl = document.getElementById("palette");
+            if (paletteEl) paletteEl.classList.add("active");
+            return;
         }
-        
-        // Desktop behavior
+        // In order to open the search widget and palette menu simultaneously
+        // this.activity.hideSearchWidget(true);
         this.dict[name].showMenu(true);
         this.activePalette = name; // used to delete plugins
     }

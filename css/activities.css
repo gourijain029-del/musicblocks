@@ -2226,20 +2226,25 @@ table {
     box-sizing: border-box;
   }
 }
-/* Mobile editing mode */
-.mobile-editing #palette.mobile-collapsible {
-    position: fixed;
-    left: -240px;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    transition: left 0.3s ease;
-}
 
-.mobile-editing #palette.mobile-collapsible.active {
-    left: 0;
-}
+/* Mobile editing layout: palette slides in from left, canvas and toolbar stay clear */
+@media (max-width: 768px) {
+    body.mobile-editing #palette.mobile-collapsible {
+        position: fixed;
+        left: -240px;
+        top: 64px;
+        width: 240px;
+        height: calc(100vh - 64px);
+        z-index: 500;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
 
-.mobile-editing #myCanvas {
-    touch-action: pan-x pan-y pinch-zoom;
+    body.mobile-editing #palette.mobile-collapsible.active {
+        left: 0;
+    }
+
+    body.mobile-editing #myCanvas {
+        touch-action: pan-x pan-y pinch-zoom;
+    }
 }

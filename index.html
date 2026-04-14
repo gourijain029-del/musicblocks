@@ -1357,15 +1357,15 @@
                     const palette = document.getElementById("palette");
 
                     if (isSmallScreen) {
-                        // Enable mobile editing mode instead of play-only
-                        body.classList.add("mobile-editing");
+                        // Mobile editing mode: keep tools accessible via slide-out palette
                         body.classList.remove("play-only");
+                        body.classList.add("mobile-editing");
                         if (palette) palette.classList.add("mobile-collapsible");
                         removePersistentNotification();
                         showElementById("palette");
                     } else {
-                        // Desktop mode
-                        body.classList.remove("mobile-editing", "play-only");
+                        // Desktop mode: restore full layout
+                        body.classList.remove("play-only", "mobile-editing");
                         if (palette) palette.classList.remove("mobile-collapsible");
                         removePersistentNotification();
                         showElementById("palette");

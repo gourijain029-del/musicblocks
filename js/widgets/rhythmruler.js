@@ -1260,6 +1260,12 @@ class RhythmRuler {
         cell.removeEventListener("mouseup", __mouseUpHandler);
         cell.addEventListener("mouseup", __mouseUpHandler);
 
+        cell.removeEventListener("touchstart", __mouseDownHandler);
+        cell.addEventListener("touchstart", __mouseDownHandler, { passive: true });
+
+        cell.removeEventListener("touchend", __mouseUpHandler);
+        cell.addEventListener("touchend", __mouseUpHandler, { passive: true });
+
         cell.removeEventListener("click", __clickHandler);
         cell.addEventListener("click", __clickHandler);
     }

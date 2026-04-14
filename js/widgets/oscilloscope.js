@@ -79,23 +79,12 @@ class Oscilloscope {
         zoomInButton.onclick = () => {
             this.zoomFactor *= 1.333;
         };
-        // Add touch support for mobile devices
-        zoomInButton.ontouchend = (e) => {
-            e.preventDefault(); // Prevent mouse events from firing
-            this.zoomFactor *= 1.333;
-        };
         zoomInButton.children[0].src = `data:image/svg+xml;base64,${window.btoa(
             base64Encode(BIGGERBUTTON)
         )}`;
 
         const zoomOutButton = widgetWindow.addButton("", Oscilloscope.ICONSIZE, _("Zoom Out"));
         zoomOutButton.onclick = () => {
-            this.zoomFactor /= 1.333;
-            if (this.zoomFactor < 1) this.zoomFactor = 1;
-        };
-        // Add touch support for mobile devices
-        zoomOutButton.ontouchend = (e) => {
-            e.preventDefault(); // Prevent mouse events from firing
             this.zoomFactor /= 1.333;
             if (this.zoomFactor < 1) this.zoomFactor = 1;
         };
