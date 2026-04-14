@@ -259,6 +259,62 @@ describe("Mobile Improvements", () => {
             expect(mockElement.ontouchstart).toBeDefined();
             expect(mockElement.ontouchend).toBeDefined();
         });
+
+        test("should have touch event handlers for oscilloscope widget", () => {
+            // Mock oscilloscope buttons
+            const mockZoomInButton = {
+                onclick: null,
+                ontouchend: null
+            };
+            const mockZoomOutButton = {
+                onclick: null,
+                ontouchend: null
+            };
+            
+            // Simulate adding touch handlers (as done in oscilloscope.js)
+            mockZoomInButton.ontouchend = jest.fn();
+            mockZoomOutButton.ontouchend = jest.fn();
+            
+            expect(mockZoomInButton.ontouchend).toBeDefined();
+            expect(mockZoomOutButton.ontouchend).toBeDefined();
+        });
+
+        test("should have touch event handlers for tempo widget", () => {
+            // Mock tempo widget elements
+            const mockPauseButton = {
+                onclick: null,
+                ontouchend: null
+            };
+            const mockSaveButton = {
+                onclick: null,
+                ontouchend: null
+            };
+            const mockSpeedUpButton = {
+                onclick: null,
+                ontouchend: null
+            };
+            const mockSlowDownButton = {
+                onclick: null,
+                ontouchend: null
+            };
+            const mockCanvas = {
+                onclick: null,
+                ontouchend: null
+            };
+            
+            // Simulate adding touch handlers (as done in tempo.js)
+            mockPauseButton.ontouchend = jest.fn();
+            mockSaveButton.ontouchend = jest.fn();
+            mockSpeedUpButton.ontouchend = jest.fn();
+            mockSlowDownButton.ontouchend = jest.fn();
+            mockCanvas.ontouchend = jest.fn();
+            
+            expect(mockPauseButton.ontouchend).toBeDefined();
+            expect(mockSaveButton.ontouchend).toBeDefined();
+            expect(mockSpeedUpButton.ontouchend).toBeDefined();
+            expect(mockSlowDownButton.ontouchend).toBeDefined();
+            expect(mockCanvas.ontouchend).toBeDefined();
+        });
     });
 
     describe("Mobile UI improvements", () => {

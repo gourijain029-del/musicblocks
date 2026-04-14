@@ -105,17 +105,53 @@ class Tempo {
                 this.isMoving = true;
             }
         };
+        // Add touch support for mobile devices
+        pauseBtn.ontouchend = (e) => {
+            e.preventDefault(); // Prevent mouse events from firing
+            if (this.isMoving) {
+                this.pause();
+                pauseBtn.innerHTML = `<img 
+                        src="header-icons/play-button.svg" 
+                        title="${_("Play")}" 
+                        alt="${_("Play")}" 
+                        height="${Tempo.ICONSIZE}" 
+                        width="${Tempo.ICONSIZE}" 
+                        vertical-align="middle"
+                    >`;
+                this.isMoving = false;
+            } else {
+                this.resume();
+                pauseBtn.innerHTML = `<img 
+                        src="header-icons/pause-button.svg" 
+                        title="${_("Pause")}" 
+                        alt="${_("Pause")}" 
+                        height="${Tempo.ICONSIZE}" 
+                        width="${Tempo.ICONSIZE}" 
+                        vertical-align="middle"
+                    >`;
+                this.isMoving = true;
+            }
+        };
 
         this._save_lock = false;
-        widgetWindow.addButton("export-chunk.svg", Tempo.ICONSIZE, _("Save tempo"), "").onclick =
-            () => {
-                // Debounce button
-                if (!this._get_save_lock()) {
-                    this._save_lock = true;
-                    this._saveTempo();
-                    setTimeout(() => (this._save_lock = false), 1000);
-                }
-            };
+        const saveButton = widgetWindow.addButton("export-chunk.svg", Tempo.ICONSIZE, _("Save tempo"), "");
+        saveButton.onclick = () => {
+            // Debounce button
+            if (!this._get_save_lock()) {
+                this._save_lock = true;
+                this._saveTempo();
+                setTimeout(() => (this._save_lock = false), 1000);
+            }
+        };
+        // Add touch support for mobile devices
+        saveButton.ontouchend = (e) => {
+            e.preventDefault(); // Prevent mouse events from firing
+            if (!this._get_save_lock()) {
+                this._save_lock = true;
+                this._saveTempo();
+                setTimeout(() => (this._save_lock = false), 1000);
+            }
+        };
 
         this.bodyTable = document.createElement("table");
         this.widgetWindow.getWidgetBody().appendChild(this.bodyTable);
@@ -134,23 +170,40 @@ class Tempo {
             r1 = this.bodyTable.insertRow();
             r2 = this.bodyTable.insertRow();
             r3 = this.bodyTable.insertRow();
-            widgetWindow.addButton(
+            const speedUpBtn = widgetWindow.addButton(
                 "up.svg",
                 Tempo.ICONSIZE,
                 _("speed up"),
                 r1.insertCell()
-            ).onclick = (
+            );
+            speedUpBtn.onclick = (
                 i => () =>
                     this.speedUp(i)
             )(i);
-            widgetWindow.addButton(
+            // Add touch support for mobile devices
+            speedUpBtn.ontouchend = (
+                i => (e) => {
+                    e.preventDefault(); // Prevent mouse events from firing
+                    this.speedUp(i);
+                }
+            )(i);
+            
+            const slowDownBtn = widgetWindow.addButton(
                 "down.svg",
                 Tempo.ICONSIZE,
                 _("slow down"),
                 r2.insertCell()
-            ).onclick = (
+            );
+            slowDownBtn.onclick = (
                 i => () =>
                     this.slowDown(i)
+            )(i);
+            // Add touch support for mobile devices
+            slowDownBtn.ontouchend = (
+                i => (e) => {
+                    e.preventDefault(); // Prevent mouse events from firing
+                    this.slowDown(i);
+                }
             )(i);
 
             this.BPMInputs[i] = widgetWindow.addInputButton(this.BPMs[i], r3.insertCell());
@@ -165,6 +218,27 @@ class Tempo {
 
             // The tempo can be set from the interval between successive clicks on the canvas.
             this.tempoCanvases[i].onclick = (id => () => {
+                const d = new Date();
+                let newBPM, BPMInput;
+                if (this._firstClickTime === null) {
+                    this._firstClickTime = d.getTime();
+                } else {
+                    newBPM = parseInt((60 * 1000) / (d.getTime() - this._firstClickTime));
+                    if (newBPM > 29 && newBPM < 1001) {
+                        this.BPMs[id] = newBPM;
+                        this._updateBPM(id);
+                        BPMInput = this.BPMInputs[id];
+                        BPMInput.value = this.BPMs[id];
+                        this._firstClickTime = null;
+                    } else {
+                        this._firstClickTime = d.getTime();
+                    }
+                }
+            })(i);
+            
+            // Add touch support for mobile devices
+            this.tempoCanvases[i].ontouchend = (id => (e) => {
+                e.preventDefault(); // Prevent mouse events from firing
                 const d = new Date();
                 let newBPM, BPMInput;
                 if (this._firstClickTime === null) {
