@@ -937,7 +937,7 @@ class Palettes {
         if (this.mobile) {
             // On mobile, slide the palette drawer in instead of hiding it
             const paletteEl = document.getElementById("palette");
-            if (paletteEl) paletteEl.classList.add("active");
+            if (paletteEl && paletteEl.classList) paletteEl.classList.add("active");
             return;
         }
         // In order to open the search widget and palette menu simultaneously
