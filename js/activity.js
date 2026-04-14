@@ -919,12 +919,13 @@ class Activity {
                 }
 
                 // Ensures that blocks do not go hide behind the search for blocks div
+                // On mobile editing layout, add extra left margin to clear the palette
+                const mobileLeftMargin = canvasWidth < RESPONSIVE_BREAKPOINT_MOBILE ? 170 : 100;
                 const leftmostX = Math.min(
                     ...group.map(id => activity.blocks.blockList[id].container.x)
                 );
                 if (leftmostX < 0) {
-                    const shiftX = 100 - leftmostX;
-
+                    const shiftX = mobileLeftMargin - leftmostX;
                     group.forEach(blockId => {
                         activity.blocks.blockList[blockId].container.x += shiftX;
                     });
@@ -4098,28 +4099,11 @@ class Activity {
             }
 
             const smallSide = Math.min(w, h);
-            let mobileSize;
             if (smallSide < this.cellSize * 9) {
-                mobileSize = false;
-                /*
-                   if (w < this.cellSize * 10) {
-                       this.turtleBlocksScale = smallSide / (this.cellSize * 11);
-                   } else {
-                       this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.75);
-                   }
-                   */
+                this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.5);
             } else {
-                mobileSize = false;
-                /*
-                   if (w / 1200 > h / 900) {
-                       this.turtleBlocksScale = w / 1200;
-                   } else {
-                       this.turtleBlocksScale = h / 900;
-                   }
-                   */
+                this.turtleBlocksScale = 1.0;
             }
-
-            this.turtleBlocksScale = 1.0;
 
             this.stage.scaleX = this.turtleBlocksScale;
             this.stage.scaleY = this.turtleBlocksScale;
@@ -4232,10 +4216,9 @@ class Activity {
 
             this.update = true;
 
-            // Hide tooltips on mobile
+            // Use platform.mobile flag consistently to gate mobile-specific UI paths
             if (typeof platform !== "undefined" && platform.mobile) {
-                // palettes.setMobile(true);
-                // palettes.hide();
+                this.palettes.setMobile(true);
                 this.toolbar.disableTooltips($j);
             } else {
                 this.palettes.setMobile(false);
@@ -4246,8 +4229,8 @@ class Activity {
             }
 
             const artcanvas = document.getElementById("overlayCanvas");
-            // Workaround for #795.5
-            if (mobileSize) {
+            // Workaround for #795.5 — double resolution on small screens
+            if (Math.min(w, h) < this.cellSize * 9) {
                 artcanvas.width = w * 2;
                 artcanvas.height = h * 2;
             } else {
