@@ -2728,6 +2728,19 @@ class Activity {
                 [null, null],
                 [null, null]
             ]; // Array to track two fingers (Y and X coordinates)
+            let initialDistance = null; // Track initial distance for pinch-to-zoom
+
+            /**
+             * Calculate distance between two touch points
+             * @param {Touch} touch1 - First touch point
+             * @param {Touch} touch2 - Second touch point
+             * @returns {number} Distance between touches
+             */
+            const getTouchDistance = (touch1, touch2) => {
+                const dx = touch1.clientX - touch2.clientX;
+                const dy = touch1.clientY - touch2.clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            };
 
             /**
              * Handles touch start event on the canvas.
@@ -2741,6 +2754,8 @@ class Activity {
                             initialTouches[i][0] = event.touches[i].clientY;
                             initialTouches[i][1] = event.touches[i].clientX;
                         }
+                        // Store initial distance for pinch-to-zoom
+                        initialDistance = getTouchDistance(event.touches[0], event.touches[1]);
                     }
                 },
                 { passive: true }
@@ -2754,26 +2769,55 @@ class Activity {
                 "touchmove",
                 event => {
                     if (event.touches.length === 2) {
-                        for (let i = 0; i < 2; i++) {
-                            const touchY = event.touches[i].clientY;
-                            const touchX = event.touches[i].clientX;
+                        const currentDistance = getTouchDistance(
+                            event.touches[0],
+                            event.touches[1]
+                        );
 
-                            if (initialTouches[i][0] !== null && initialTouches[i][1] !== null) {
-                                const deltaY = touchY - initialTouches[i][0];
-                                const deltaX = touchX - initialTouches[i][1];
+                        // Handle pinch-to-zoom
+                        if (
+                            initialDistance !== null &&
+                            Math.abs(currentDistance - initialDistance) > 10
+                        ) {
+                            const scaleFactor = currentDistance / initialDistance;
 
-                                if (deltaY !== 0) {
-                                    closeAnyOpenMenusAndLabels();
-                                    that.blocksContainer.y -= deltaY;
+                            if (scaleFactor > 1.1) {
+                                // Zoom in
+                                closeAnyOpenMenusAndLabels();
+                                that.doLargerBlocks();
+                                initialDistance = currentDistance; // Update for next comparison
+                            } else if (scaleFactor < 0.9) {
+                                // Zoom out
+                                closeAnyOpenMenusAndLabels();
+                                that.doSmallerBlocks();
+                                initialDistance = currentDistance; // Update for next comparison
+                            }
+                        } else {
+                            // Handle panning when not pinching
+                            for (let i = 0; i < 2; i++) {
+                                const touchY = event.touches[i].clientY;
+                                const touchX = event.touches[i].clientX;
+
+                                if (
+                                    initialTouches[i][0] !== null &&
+                                    initialTouches[i][1] !== null
+                                ) {
+                                    const deltaY = touchY - initialTouches[i][0];
+                                    const deltaX = touchX - initialTouches[i][1];
+
+                                    if (deltaY !== 0) {
+                                        closeAnyOpenMenusAndLabels();
+                                        that.blocksContainer.y -= deltaY;
+                                    }
+
+                                    if (that.scrollBlockContainer && deltaX !== 0) {
+                                        closeAnyOpenMenusAndLabels();
+                                        that.blocksContainer.x -= deltaX;
+                                    }
+
+                                    initialTouches[i][0] = touchY;
+                                    initialTouches[i][1] = touchX;
                                 }
-
-                                if (that.scrollBlockContainer && deltaX !== 0) {
-                                    closeAnyOpenMenusAndLabels();
-                                    that.blocksContainer.x -= deltaX;
-                                }
-
-                                initialTouches[i][0] = touchY;
-                                initialTouches[i][1] = touchX;
                             }
                         }
 
@@ -2791,6 +2835,7 @@ class Activity {
                     initialTouches[i][0] = null;
                     initialTouches[i][1] = null;
                 }
+                initialDistance = null; // Reset pinch distance
             });
 
             /**
@@ -4100,26 +4145,25 @@ class Activity {
             const smallSide = Math.min(w, h);
             let mobileSize;
             if (smallSide < this.cellSize * 9) {
-                mobileSize = false;
-                /*
-                   if (w < this.cellSize * 10) {
-                       this.turtleBlocksScale = smallSide / (this.cellSize * 11);
-                   } else {
-                       this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.75);
-                   }
-                   */
+                mobileSize = true;
+                // Mobile scaling for very small screens
+                if (w < this.cellSize * 10) {
+                    this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.6);
+                } else {
+                    this.turtleBlocksScale = Math.max(smallSide / (this.cellSize * 11), 0.75);
+                }
             } else {
                 mobileSize = false;
-                /*
-                   if (w / 1200 > h / 900) {
-                       this.turtleBlocksScale = w / 1200;
-                   } else {
-                       this.turtleBlocksScale = h / 900;
-                   }
-                   */
+                // Desktop scaling logic
+                if (w / 1200 > h / 900) {
+                    this.turtleBlocksScale = Math.min(w / 1200, 1.2);
+                } else {
+                    this.turtleBlocksScale = Math.min(h / 900, 1.2);
+                }
             }
 
-            this.turtleBlocksScale = 1.0;
+            // Ensure scale doesn't go below minimum or above maximum
+            this.turtleBlocksScale = Math.max(0.5, Math.min(this.turtleBlocksScale, 2.0));
 
             this.stage.scaleX = this.turtleBlocksScale;
             this.stage.scaleY = this.turtleBlocksScale;

@@ -2226,3 +2226,136 @@ table {
     box-sizing: border-box;
   }
 }
+
+/* ======================================================
+   Mobile Editing Mode Styles
+   ====================================================== */
+
+/* Mobile editing mode layout */
+.mobile-editing {
+    --mobile-palette-width: 280px;
+    --mobile-button-size: 48px;
+}
+
+/* Mobile palette - collapsible drawer */
+.mobile-editing #palette.mobile-collapsible {
+    position: fixed !important;
+    left: -240px !important; /* Hidden by default */
+    top: 0 !important;
+    width: var(--mobile-palette-width) !important;
+    height: 100vh !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border-right: 1px solid #ddd !important;
+    transition: left 0.3s ease !important;
+    z-index: 1000 !important;
+    overflow-y: auto !important;
+}
+
+/* Show palette when active */
+.mobile-editing #palette.mobile-collapsible.active {
+    left: 0 !important;
+}
+
+/* Mobile palette toggle button */
+.mobile-editing #palette.mobile-collapsible::before {
+    content: "☰";
+    position: absolute;
+    right: -40px;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* Mobile touch buttons */
+.mobile-editing .mobile-touch-button {
+    min-width: var(--mobile-button-size) !important;
+    min-height: var(--mobile-button-size) !important;
+    padding: 12px !important;
+    margin: 8px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mobile canvas adjustments */
+.mobile-editing #myCanvas {
+    touch-action: pan-x pan-y pinch-zoom !important;
+}
+
+/* Mobile button container positioning */
+.mobile-editing #buttoncontainerBOTTOM {
+    position: fixed !important;
+    bottom: 1rem !important;
+    right: 1rem !important;
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    align-items: flex-end !important;
+    z-index: 999 !important;
+}
+
+/* Hide grid on very small screens */
+@media (max-width: 480px) {
+    .mobile-editing #grid {
+        display: none !important;
+    }
+}
+
+/* Responsive mobile breakpoints */
+@media (max-width: 768px) {
+    .mobile-editing {
+        --mobile-palette-width: 260px;
+        --mobile-button-size: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-editing {
+        --mobile-palette-width: 240px;
+        --mobile-button-size: 40px;
+    }
+    
+    .mobile-editing #palette.mobile-collapsible {
+        left: -200px !important;
+        width: 240px !important;
+    }
+    
+    .mobile-editing #palette.mobile-collapsible.active {
+        left: 0 !important;
+    }
+}
+
+/* Ensure blocks are touch-friendly on mobile */
+.mobile-editing .blocklyDraggable {
+    cursor: grab !important;
+}
+
+.mobile-editing .blocklyDraggable:active {
+    cursor: grabbing !important;
+}
+
+/* Mobile widget adjustments */
+.mobile-editing .widgetWindow {
+    max-width: 90vw !important;
+    max-height: 80vh !important;
+}
+
+/* Mobile toolbar adjustments */
+.mobile-editing #toolbar {
+    padding: 8px !important;
+}
+
+.mobile-editing #toolbar img {
+    width: 32px !important;
+    height: 32px !important;
+}
