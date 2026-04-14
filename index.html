@@ -1351,63 +1351,30 @@
                     }
                 }
 
-                function toggleMobileMode() {
+                function togglePlayOnlyMode() {
                     const isSmallScreen = window.innerWidth < 768 || window.innerHeight < 600;
                     const body = document.body;
                     const palette = document.getElementById("palette");
 
                     if (isSmallScreen) {
-                        // Enable mobile editing mode
+                        // Enable mobile editing mode instead of play-only
                         body.classList.add("mobile-editing");
                         body.classList.remove("play-only");
+                        if (palette) palette.classList.add("mobile-collapsible");
                         removePersistentNotification();
-
-                        // Make palette collapsible on mobile
-                        if (palette) {
-                            palette.classList.add("mobile-collapsible");
-                        }
-
-                        // Adjust button sizes for touch
-                        const buttons = document.querySelectorAll("#buttoncontainerBOTTOM > div");
-                        buttons.forEach(button => {
-                            button.classList.add("mobile-touch-button");
-                        });
-
-                        // Show all essential editing tools
-                        showElementById("Show/hide blocks");
-                        showElementById("Expand/collapse blocks");
-                        showElementById("Decrease block size");
-                        showElementById("Increase block size");
-                        showElementById("grid");
                         showElementById("palette");
                     } else {
-                        // Disable mobile mode
-                        body.classList.remove("mobile-editing");
-                        body.classList.remove("play-only");
+                        // Desktop mode
+                        body.classList.remove("mobile-editing", "play-only");
+                        if (palette) palette.classList.remove("mobile-collapsible");
                         removePersistentNotification();
-
-                        // Remove mobile-specific classes
-                        if (palette) {
-                            palette.classList.remove("mobile-collapsible");
-                        }
-
-                        const buttons = document.querySelectorAll("#buttoncontainerBOTTOM > div");
-                        buttons.forEach(button => {
-                            button.classList.remove("mobile-touch-button");
-                        });
-
-                        showElementById("Show/hide blocks");
-                        showElementById("Expand/collapse blocks");
-                        showElementById("Decrease block size");
-                        showElementById("Increase block size");
-                        showElementById("grid");
                         showElementById("palette");
                     }
                 }
 
-                toggleMobileMode();
+                togglePlayOnlyMode();
 
-                window.addEventListener("resize", toggleMobileMode);
+                window.addEventListener("resize", togglePlayOnlyMode);
             });
 
             (function () {
@@ -1443,40 +1410,3 @@
         </script>
     </body>
 </html>
-            // Mobile palette toggle functionality
-            document.addEventListener("DOMContentLoaded", function() {
-                function setupMobilePaletteToggle() {
-                    const palette = document.getElementById("palette");
-                    if (!palette) return;
-
-                    // Add click handler for palette toggle
-                    palette.addEventListener("click", function(e) {
-                        if (e.target === palette && palette.classList.contains("mobile-collapsible")) {
-                            // Clicked on the toggle area (::before pseudo-element area)
-                            const rect = palette.getBoundingClientRect();
-                            const toggleArea = {
-                                left: rect.right - 40,
-                                right: rect.right,
-                                top: rect.top + 20,
-                                bottom: rect.top + 60
-                            };
-                            
-                            if (e.clientX >= toggleArea.left && e.clientX <= toggleArea.right &&
-                                e.clientY >= toggleArea.top && e.clientY <= toggleArea.bottom) {
-                                palette.classList.toggle("active");
-                            }
-                        }
-                    });
-
-                    // Close palette when clicking outside on mobile
-                    document.addEventListener("click", function(e) {
-                        if (palette.classList.contains("mobile-collapsible") && 
-                            palette.classList.contains("active") &&
-                            !palette.contains(e.target)) {
-                            palette.classList.remove("active");
-                        }
-                    });
-                }
-
-                setupMobilePaletteToggle();
-            });
