@@ -923,11 +923,16 @@ class Palettes {
     }
 
     showPalette(name) {
+        // For mobile, toggle the palette drawer instead of showing individual palettes
         if (this.mobile) {
-            return;
+            const palette = document.getElementById("palette");
+            if (palette && palette.classList && palette.classList.contains("mobile-collapsible")) {
+                palette.classList.toggle("active");
+            }
+            return; // Always return early for mobile, regardless of DOM state
         }
-        // In order to open the search widget and palette menu simultaneously
-        // this.activity.hideSearchWidget(true);
+        
+        // Desktop behavior
         this.dict[name].showMenu(true);
         this.activePalette = name; // used to delete plugins
     }

@@ -1,14 +1,18 @@
-/* play-only-mode.css - Clean implementation of play-only mode UI */
+/* mobile-editing-mode.css - Mobile-optimized editing interface */
 
-/* Allow scrolling in play-only mode */
-.play-only body {
+/* Mobile editing mode replaces the old play-only mode */
+/* This file contains mobile-specific overrides and enhancements */
+
+/* Mobile body adjustments */
+.mobile-editing body {
     overflow: auto !important;
     height: auto !important;
     min-height: 100vh !important;
+    touch-action: manipulation !important; /* Prevent double-tap zoom */
 }
 
-/* Floating controls container at bottom-right */
-.play-only #buttoncontainerBOTTOM {
+/* Enhanced mobile button container */
+.mobile-editing #buttoncontainerBOTTOM {
     display: flex !important;
     flex-direction: column-reverse !important;
     align-items: flex-end !important;

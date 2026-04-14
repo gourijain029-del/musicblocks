@@ -3253,16 +3253,16 @@ class Block {
             if (window.hasMouse) {
                 moved = true;
             } else {
-                // Make it easier to select text on mobile.
+                // Improved touch interaction: reduced threshold and timeout for better responsiveness
                 setTimeout(() => {
                     moved =
                         Math.abs(event.stageX / that.activity.getStageScale() - that.original.x) +
                             Math.abs(
                                 event.stageY / that.activity.getStageScale() - that.original.y
                             ) >
-                            20 && !window.hasMouse;
+                            15 && !window.hasMouse; // Reduced from 20px to 15px for better touch sensitivity
                     getInput = !moved;
-                }, 200);
+                }, 150); // Reduced from 200ms to 150ms for faster response
             }
 
             const oldX = that.container.x;

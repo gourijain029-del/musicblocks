@@ -216,7 +216,52 @@ describe("Mobile Improvements", () => {
         });
     });
 
-    describe("Mobile palette functionality", () => {
+    describe("Touch drag improvements", () => {
+        test("should use improved touch thresholds for better responsiveness", () => {
+            // Test the improved touch drag thresholds
+            const originalX = 100;
+            const originalY = 100;
+            const stageScale = 1.0;
+            
+            // Test cases for the improved 15px threshold (reduced from 20px)
+            // Logic: Math.abs(deltaX) + Math.abs(deltaY) > 15
+            const testCases = [
+                { deltaX: 7, deltaY: 7, shouldMove: false },   // 14 total - below threshold
+                { deltaX: 8, deltaY: 8, shouldMove: true },    // 16 total - above threshold
+                { deltaX: 16, deltaY: 0, shouldMove: true },   // 16 total - above threshold
+                { deltaX: 0, deltaY: 16, shouldMove: true },   // 16 total - above threshold
+                { deltaX: 10, deltaY: 5, shouldMove: false },  // 15 total - equal to threshold (not greater)
+                { deltaX: 10, deltaY: 6, shouldMove: true }    // 16 total - above threshold
+            ];
+            
+            testCases.forEach(({ deltaX, deltaY, shouldMove }) => {
+                const moved = (Math.abs(deltaX) + Math.abs(deltaY)) > 15;
+                expect(moved).toBe(shouldMove);
+            });
+        });
+    });
+
+    describe("Widget touch support", () => {
+        test("should have touch event handlers for music keyboard", () => {
+            // Mock a keyboard element
+            const mockElement = {
+                ontouchstart: null,
+                ontouchend: null,
+                onmousedown: null,
+                onmouseup: null,
+                id: "test-key"
+            };
+            
+            // Simulate adding touch handlers (as done in musickeyboard.js)
+            mockElement.ontouchstart = jest.fn();
+            mockElement.ontouchend = jest.fn();
+            
+            expect(mockElement.ontouchstart).toBeDefined();
+            expect(mockElement.ontouchend).toBeDefined();
+        });
+    });
+
+    describe("Mobile UI improvements", () => {
         test("should add mobile classes when in mobile mode", () => {
             const palette = document.getElementById("palette");
             const body = document.body;

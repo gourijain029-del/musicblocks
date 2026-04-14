@@ -533,6 +533,13 @@ function MusicKeyboard(activity) {
             __startNote(this);
         };
 
+        // Add touch support for mobile devices
+        element.ontouchstart = function (e) {
+            e.preventDefault(); // Prevent mouse events from firing
+            activeKey = element;
+            __startNote(this);
+        };
+
         /**
          * End a musical note when the element is released.
          */
@@ -581,12 +588,15 @@ function MusicKeyboard(activity) {
                 __endNote(this);
                 activeKey = null;
             } else {
-                const id = activeKey.id;
-                if (id.includes("blackRow")) {
-                    activeKey.style.backgroundColor = "black";
-                } else {
-                    activeKey.style.backgroundColor = "white";
-                }
+                // Ignore mouseup if it doesn't match the active key
+            }
+        };
+
+        // Add touch support for mobile devices
+        element.ontouchend = function (e) {
+            e.preventDefault(); // Prevent mouse events from firing
+            if (activeKey === element) {
+                __endNote(this);
                 activeKey = null;
             }
         };
