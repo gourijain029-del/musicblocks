@@ -1354,31 +1354,20 @@
                 function togglePlayOnlyMode() {
                     const isSmallScreen = window.innerWidth < 768 || window.innerHeight < 600;
                     const body = document.body;
-                    const homeButton = document.getElementById("Home [HOME]");
-                    const buttonContainer = document.getElementById("buttoncontainerBOTTOM");
+                    const palette = document.getElementById("palette");
 
                     if (isSmallScreen) {
-                        // Enable play-only mode
-                        body.classList.add("play-only");
-                        showPersistentNotification();
-
-                        // Hide certain elements
-                        hideElementById("Show/hide blocks");
-                        hideElementById("Expand/collapse blocks");
-                        hideElementById("Decrease block size");
-                        hideElementById("Increase block size");
-                        hideElementById("grid");
-                        hideElementById("palette");
-                    } else {
-                        // Disable play-only mode
+                        // Mobile editing mode: keep tools accessible via slide-out palette
                         body.classList.remove("play-only");
+                        body.classList.add("mobile-editing");
+                        if (palette) palette.classList.add("mobile-collapsible");
                         removePersistentNotification();
-
-                        showElementById("Show/hide blocks");
-                        showElementById("Expand/collapse blocks");
-                        showElementById("Decrease block size");
-                        showElementById("Increase block size");
-                        showElementById("grid");
+                        showElementById("palette");
+                    } else {
+                        // Desktop mode: restore full layout
+                        body.classList.remove("play-only", "mobile-editing");
+                        if (palette) palette.classList.remove("mobile-collapsible");
+                        removePersistentNotification();
                         showElementById("palette");
                     }
                 }
