@@ -543,11 +543,16 @@ class Singer {
         const saveSuppressStatus = tur.singer.suppressOutput;
 
         // We need to save the state of the boxes and heap although there is a potential of a boxes collision with other turtles
-        const saveBoxes = logo.boxes != null ? deepClone(logo.boxes) : undefined;
+        const saveBoxes =
+            logo.boxes !== null && logo.boxes !== undefined ? deepClone(logo.boxes) : undefined;
         const saveTurtleHeaps =
-            logo.turtleHeaps[turtle] != null ? deepClone(logo.turtleHeaps[turtle]) : undefined;
+            logo.turtleHeaps[turtle] !== null && logo.turtleHeaps[turtle] !== undefined
+                ? deepClone(logo.turtleHeaps[turtle])
+                : undefined;
         const saveTurtleDicts =
-            logo.turtleDicts[turtle] != null ? deepClone(logo.turtleDicts[turtle]) : undefined;
+            logo.turtleDicts[turtle] !== null && logo.turtleDicts[turtle] !== undefined
+                ? deepClone(logo.turtleDicts[turtle])
+                : undefined;
         // .. and the turtle state
         const saveX = tur.x;
         const saveY = tur.y;
@@ -598,17 +603,17 @@ class Singer {
         tur.singer.tallyNotes = saveTallyNotes;
 
         // Restore previous state
-        if (saveBoxes == undefined) {
+        if (saveBoxes === undefined) {
             logo.boxes = {};
         } else {
             logo.boxes = saveBoxes;
         }
-        if (saveTurtleHeaps == undefined) {
+        if (saveTurtleHeaps === undefined) {
             logo.turtleHeaps = {};
         } else {
             logo.turtleHeaps[turtle] = saveTurtleHeaps;
         }
-        if (saveTurtleDicts == undefined) {
+        if (saveTurtleDicts === undefined) {
             logo.turtleDicts = {};
         } else {
             logo.turtleDicts[turtle] = saveTurtleDicts;
@@ -657,11 +662,16 @@ class Singer {
 
         const saveState = {
             suppressOutput: tur.singer.suppressOutput,
-            boxes: logo.boxes != null ? deepClone(logo.boxes) : undefined,
+            boxes:
+                logo.boxes !== null && logo.boxes !== undefined ? deepClone(logo.boxes) : undefined,
             turtleHeaps:
-                logo.turtleHeaps[turtle] != null ? deepClone(logo.turtleHeaps[turtle]) : undefined,
+                logo.turtleHeaps[turtle] !== null && logo.turtleHeaps[turtle] !== undefined
+                    ? deepClone(logo.turtleHeaps[turtle])
+                    : undefined,
             turtleDicts:
-                logo.turtleDicts[turtle] != null ? deepClone(logo.turtleDicts[turtle]) : undefined,
+                logo.turtleDicts[turtle] !== null && logo.turtleDicts[turtle] !== undefined
+                    ? deepClone(logo.turtleDicts[turtle])
+                    : undefined,
             x: tur.x,
             y: tur.y,
             color: tur.painter.color,
@@ -718,11 +728,16 @@ class Singer {
             penState: saveState.penState
         });
 
-        activity.logo.boxes = saveState.boxes != null ? saveState.boxes : {};
+        activity.logo.boxes =
+            saveState.boxes !== null && saveState.boxes !== undefined ? saveState.boxes : {};
         activity.logo.turtleHeaps[turtle] =
-            saveState.turtleHeaps != null ? saveState.turtleHeaps : {};
+            saveState.turtleHeaps !== null && saveState.turtleHeaps !== undefined
+                ? saveState.turtleHeaps
+                : {};
         activity.logo.turtleDicts[turtle] =
-            saveState.turtleDicts != null ? saveState.turtleDicts : {};
+            saveState.turtleDicts !== null && saveState.turtleDicts !== undefined
+                ? saveState.turtleDicts
+                : {};
 
         tur.painter.doPenUp();
         tur.painter.doSetXY(saveState.x, saveState.y);
@@ -1118,7 +1133,7 @@ class Singer {
                 for (let i = 0, len = transpositionRatios.length; i < len; i++) {
                     ratio *= transpositionRatios[i];
                 }
-                if (ratio != 1) {
+                if (ratio !== 1) {
                     const hertz = getCachedPitchToFrequency(
                         noteObj[0],
                         noteObj[1],
@@ -1904,7 +1919,10 @@ class Singer {
             if (tur.singer.swing.length > 0) {
                 /** @deprecated */
                 // newswing2 takes the target as an argument
-                if (last(tur.singer.swingTarget) == null) {
+                if (
+                    last(tur.singer.swingTarget) === null ||
+                    last(tur.singer.swingTarget) === undefined
+                ) {
                     // When we start a swing we need to keep track of the initial beat value
                     tur.singer.swingTarget[tur.singer.swingTarget.length - 1] = noteBeatValue;
                 }
