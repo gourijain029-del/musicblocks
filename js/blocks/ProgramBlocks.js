@@ -83,7 +83,7 @@ function setupProgramBlocks(activity) {
 
             // Use async fetch to avoid blocking the UI
             if (!isSafeUrl(url)) {
-                activity.errorMsg(_("Invalid URL"));
+                activity.errorMsg(_("Invalid URL"), blk);
                 return;
             }
 
@@ -91,7 +91,7 @@ function setupProgramBlocks(activity) {
                 .then(response => {
                     if (!response.ok) {
                         console.debug("fetched the wrong page or network error...");
-                        activity.errorMsg(_("404: Page not found"));
+                        activity.errorMsg(_("404: Page not found"), blk);
                         throw new Error("Network response was not ok");
                     }
                     return response.text();
@@ -103,7 +103,7 @@ function setupProgramBlocks(activity) {
                         logo.turtleHeaps[name] = data;
                     } catch (e) {
                         console.debug(e);
-                        activity.errorMsg(_("Error parsing JSON data:") + e);
+                        activity.errorMsg(_("Error parsing JSON data:") + e, blk);
                         logo.turtleHeaps[name] = oldHeap;
                     }
                 })
@@ -178,7 +178,7 @@ function setupProgramBlocks(activity) {
             if (name in logo.turtleHeaps) {
                 const data = JSON.stringify(logo.turtleHeaps[name]);
                 if (!isSafeUrl(url)) {
-                    activity.errorMsg(_("Invalid URL"));
+                    activity.errorMsg(_("Invalid URL"), blk);
                     return;
                 }
 
@@ -187,7 +187,7 @@ function setupProgramBlocks(activity) {
                 xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                 xmlHttp.send(data);
             } else {
-                activity.errorMsg(_("Cannot find a valid heap for") + " " + name);
+                activity.errorMsg(_("Cannot find a valid heap for") + " " + name, blk);
             }
         }
     }
@@ -256,7 +256,7 @@ function setupProgramBlocks(activity) {
             const c = block.connections[1];
             if (c !== null && activity.blocks.blockList[c].name === "loadFile") {
                 if (args.length !== 1) {
-                    activity.errorMsg(_("You must select a file."));
+                    activity.errorMsg(_("You must select a file."), blk);
                 } else {
                     try {
                         logo.turtleHeaps[turtle] = JSON.parse(
@@ -268,12 +268,13 @@ function setupProgramBlocks(activity) {
                     } catch (e) {
                         logo.turtleHeaps[turtle] = oldHeap;
                         activity.errorMsg(
-                            _("The file you selected does not contain a valid heap.")
+                            _("The file you selected does not contain a valid heap."),
+                            blk
                         );
                     }
                 }
             } else {
-                activity.errorMsg(_("The loadHeap block needs a loadFile block."));
+                activity.errorMsg(_("The loadHeap block needs a loadFile block."), blk);
             }
         }
     }
