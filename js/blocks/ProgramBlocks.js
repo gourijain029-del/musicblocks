@@ -339,10 +339,13 @@ function setupProgramBlocks(activity) {
                     }
                 } catch (e) {
                     logo.turtleHeaps[turtle] = oldHeap;
-                    activity.errorMsg(_("The block you selected does not contain a valid heap."));
+                    activity.errorMsg(
+                        _("The block you selected does not contain a valid heap."),
+                        blk
+                    );
                 }
             } else {
-                activity.errorMsg(_("The Set heap block needs a heap."));
+                activity.errorMsg(_("The Set heap block needs a heap."), blk);
             }
         }
     }
@@ -425,7 +428,7 @@ function setupProgramBlocks(activity) {
             const c = block.connections[2];
             if (c !== null && activity.blocks.blockList[c].name === "loadFile") {
                 if (args.length !== 2) {
-                    activity.errorMsg(_("You must select a file."));
+                    activity.errorMsg(_("You must select a file."), blk);
                 } else {
                     try {
                         const d = JSON.parse(activity.blocks.blockList[c].value[1]);
@@ -442,12 +445,13 @@ function setupProgramBlocks(activity) {
                         }
                     } catch (e) {
                         activity.errorMsg(
-                            _("The file you selected does not contain a valid dictionary.")
+                            _("The file you selected does not contain a valid dictionary."),
+                            blk
                         );
                     }
                 }
             } else {
-                activity.errorMsg(_("The load dictionary block needs a load file block."));
+                activity.errorMsg(_("The load dictionary block needs a load file block."), blk);
             }
         }
     }
@@ -544,11 +548,12 @@ function setupProgramBlocks(activity) {
                     }
                 } catch (e) {
                     activity.errorMsg(
-                        _("The block you selected does not contain a valid dictionary.")
+                        _("The block you selected does not contain a valid dictionary."),
+                        blk
                     );
                 }
             } else {
-                activity.errorMsg(_("The set dictionary block needs a dictionary."));
+                activity.errorMsg(_("The set dictionary block needs a dictionary."), blk);
             }
         }
     }
@@ -1325,7 +1330,7 @@ function setupProgramBlocks(activity) {
                 const protoblk = obj[0];
                 const protoName = obj[2];
                 if (protoblk === null) {
-                    activity.errorMsg(_("Cannot find block") + " " + name);
+                    activity.errorMsg(_("Cannot find block") + " " + name, blk);
 
                     console.debug("Cannot find block " + name);
                     return 0;
@@ -1343,25 +1348,35 @@ function setupProgramBlocks(activity) {
 
                             if (typeof arg === "number") {
                                 if (!["anyin", "numberin"].includes(dockType)) {
-                                    activity.errorMsg(_("Warning: block argument type mismatch"));
+                                    activity.errorMsg(
+                                        _("Warning: block argument type mismatch"),
+                                        blk
+                                    );
                                 }
                                 newBlock.push([i, ["number", { value: arg }], 0, 0, [0]]);
                                 newBlock[0][4].push(i);
                             } else if (typeof arg === "string") {
                                 if (!["anyin", "textin"].includes(dockType)) {
-                                    activity.errorMsg(_("Warning: block argument type mismatch"));
+                                    activity.errorMsg(
+                                        _("Warning: block argument type mismatch"),
+                                        blk
+                                    );
                                 }
                                 newBlock.push([i, ["string", { value: arg }], 0, 0, [0]]);
                                 newBlock[0][4].push(i);
                             } else if (typeof arg === "boolean") {
                                 if (!["anyin", "booleanin"].includes(dockType)) {
-                                    activity.errorMsg(_("Warning: block argument type mismatch"));
+                                    activity.errorMsg(
+                                        _("Warning: block argument type mismatch"),
+                                        blk
+                                    );
                                 }
                                 newBlock.push([i, ["boolean", { value: arg }], 0, 0, [0]]);
                                 newBlock[0][4].push(i);
                             } else {
                                 activity.errorMsg(
-                                    _("Warning: block argument type unhandled: ") + typeof arg
+                                    _("Warning: block argument type unhandled: ") + typeof arg,
+                                    blk
                                 );
 
                                 console.warn("Unhandled argument type", arg);
@@ -1444,7 +1459,7 @@ function setupProgramBlocks(activity) {
             // only http: and https: protocols, preventing open redirect attacks
             // via javascript:, data:, vbscript:, or other dangerous URI schemes.
             if (!isSafeUrl(url)) {
-                activity.errorMsg(_("Please enter a valid URL."));
+                activity.errorMsg(_("Please enter a valid URL."), blk);
                 return;
             }
 
