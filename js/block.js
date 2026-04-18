@@ -3188,9 +3188,9 @@ class Block {
             that.blocks.raiseStackToTop(thisBlock);
 
             // And possibly the collapse button.
-            if (that.collapseContainer != null) {
+            if (that.collapseContainer !== null) {
                 // Ensure the blocksContainer still exisits.
-                if (that.activity.blocksContainer != null) {
+                if (that.activity.blocksContainer !== null) {
                     that.activity.blocksContainer.setChildIndex(
                         that.collapseContainer,
                         that.activity.blocksContainer.children.length - 1
@@ -3221,7 +3221,7 @@ class Block {
             // mouse move event.
             _dragHasRest2 = false;
             let checkBlock = that.blocks.blockList[that.connections[1]];
-            while (checkBlock != null) {
+            while (checkBlock !== null) {
                 if (checkBlock?.name === "rest2") {
                     _dragHasRest2 = true;
                     break;
@@ -3264,16 +3264,17 @@ class Block {
             if (window.hasMouse) {
                 moved = true;
             } else {
-                // Make it easier to select text on mobile.
+                // Tuned for touch: 15px threshold and 150ms timeout balance
+                // reliable drag detection without accidentally triggering text input.
                 setTimeout(() => {
                     moved =
                         Math.abs(event.stageX / that.activity.getStageScale() - that.original.x) +
                             Math.abs(
                                 event.stageY / that.activity.getStageScale() - that.original.y
                             ) >
-                            20 && !window.hasMouse;
+                            15 && !window.hasMouse;
                     getInput = !moved;
-                }, 200);
+                }, 150);
             }
 
             const oldX = that.container.x;
@@ -3382,7 +3383,7 @@ class Block {
         this.container.on("mouseout", event => {
             // Ignore transient mouseout while actively dragging.
             if (that._dragPointerDown) {
-                if (that.blocks.longPressTimeout != null) {
+                if (that.blocks.longPressTimeout !== null) {
                     clearTimeout(that.blocks.longPressTimeout);
                     that.blocks.longPressTimeout = null;
                 }
