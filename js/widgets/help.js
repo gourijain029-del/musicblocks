@@ -47,6 +47,12 @@ class HelpWidget {
         //widgetWindow.getWidgetBody().style.overflowY = "auto";
         // const canvasHeight = docById("myCanvas").getBoundingClientRect().height;
         widgetWindow.getWidgetBody().style.maxHeight = "70vh";
+        widgetWindow.getWidgetFrame().style.minHeight = "auto";
+        widgetWindow.getWidgetFrame().style.minWidth = "auto";
+        widgetWindow.getWidgetFrame().id = "helpDiv";
+        if (widgetWindow._overlayframe) {
+            widgetWindow._overlayframe.style.display = "none";
+        }
         this.widgetWindow = widgetWindow;
         widgetWindow.clear();
         widgetWindow.show();
@@ -95,7 +101,8 @@ class HelpWidget {
                     <div id="left-arrow" class="hover" tabindex="0" role="button" aria-label="${_(
                         "Previous"
                     )}"></div>
-                    <div id="helpButtonsDiv" tabindex="-1"></div>
+                    <div id="helpButtonsDiv" tabindex="-1">
+                    </div>
                     <div id="helpScrollWrapper">
                         <div id="helpBodyDiv" tabindex="-1"></div>
                     </div>
@@ -103,6 +110,16 @@ class HelpWidget {
 
         this._helpDiv.insertAdjacentHTML("afterbegin", innerHTML);
         this.widgetWindow.getWidgetBody().append(this._helpDiv);
+
+        const tourCloseButton = document.getElementById("tourCloseButton");
+        if (tourCloseButton) {
+            tourCloseButton.onclick = () => this.widgetWindow.onclose();
+            tourCloseButton.onkeydown = e => {
+                if (e.key === "Enter" || e.key === " ") {
+                    this.widgetWindow.onclose();
+                }
+            };
+        }
 
         let leftArrow, rightArrow;
         if (!useActiveBlock) {
@@ -192,7 +209,8 @@ class HelpWidget {
         if (!useActiveBlock) {
             // display help menu
             docById("helpBodyDiv").style.height = "325px";
-            docById("helpBodyDiv").style.width = "345px";
+            docById("helpBodyDiv").style.width = "100%";
+            docById("helpBodyDiv").style.maxWidth = "345px";
             this._showPage(page);
         } else {
             // display help for this block
@@ -377,14 +395,17 @@ class HelpWidget {
         ) {
             // body = body + '<p>&nbsp;<img src="' + HELPCONTENT[page][2] + '"></p>';
             const figure = document.createElement("figure");
+            figure.classList.add("tour-figure");
             const img = document.createElement("img");
             img.src = HELPCONTENT[page][2];
             img.alt = `${HELPCONTENT[page][0]} icon`;
             img.loading = "lazy";
+            img.classList.add("tour-img");
             figure.append(img);
             bodyFragment.append(figure);
         } else {
             const figure = document.createElement("figure");
+            figure.classList.add("tour-figure");
             const img = document.createElement("img");
             img.src = HELPCONTENT[page][2];
             img.alt = `${HELPCONTENT[page][0]} icon`;
@@ -461,7 +482,7 @@ class HelpWidget {
             };
         }
 
-        helpBody.style.color = "#505050";
+        // helpBody.style.color = "#505050";
         helpBody.append(bodyFragment);
 
         this.widgetWindow.takeFocus();

@@ -559,7 +559,7 @@ describe("HelpWidget", () => {
             expect(link).toBeNull();
         });
 
-        test("_showPage sets helpBody text color", () => {
+        test("_showPage sets support for themes (no hardcoded color)", () => {
             const activity = createMockActivity();
             const hw = new HelpWidget(activity, false);
             jest.runAllTimers();
@@ -567,7 +567,7 @@ describe("HelpWidget", () => {
             hw._showPage(0);
 
             const helpBody = document.getElementById("helpBodyDiv");
-            expect(helpBody.style.color).toBe("rgb(80, 80, 80)");
+            expect(helpBody.style.color).toBe("");
         });
 
         test("_showPage calls takeFocus", () => {
