@@ -403,13 +403,15 @@ class ThemeBox {
                 const paletteElement = document.getElementById("palette");
                 if (paletteElement && paletteElement.childNodes[0]) {
                     paletteElement.childNodes[0].style.border = `1px solid ${window.platformColor.selectorSelected}`;
-                    paletteElement.childNodes[0].style.backgroundColor = window.platformColor.paletteBackground;
+                    paletteElement.childNodes[0].style.backgroundColor =
+                        window.platformColor.paletteBackground;
                 }
 
                 // Update palette toggle button
                 const paletteToggle = document.getElementById("paletteToggle");
                 if (paletteToggle) {
-                    paletteToggle.style.backgroundColor = window.platformColor.paletteLabelBackground;
+                    paletteToggle.style.backgroundColor =
+                        window.platformColor.paletteLabelBackground;
                 }
 
                 // Refresh palette selector icons and headers with new theme colors
