@@ -403,25 +403,11 @@ class ThemeBox {
                 const paletteElement = document.getElementById("palette");
                 if (paletteElement && paletteElement.childNodes[0]) {
                     paletteElement.childNodes[0].style.border = `1px solid ${window.platformColor.selectorSelected}`;
-                    paletteElement.childNodes[0].style.backgroundColor =
-                        window.platformColor.paletteBackground;
                 }
 
-                // Update palette toggle button
-                const paletteToggle = document.getElementById("paletteToggle");
-                if (paletteToggle) {
-                    paletteToggle.style.backgroundColor =
-                        window.platformColor.paletteLabelBackground;
-                }
-
-                // Refresh palette selector icons and headers with new theme colors
+                // Refresh palette selector icons with new theme colors
                 const tr = document.querySelector("#palette > div > table > thead > tr");
                 if (tr) {
-                    const tables = paletteElement.querySelectorAll("table");
-                    tables.forEach(table => {
-                        table.style.backgroundColor = window.platformColor.paletteBackground;
-                    });
-
                     for (let j = 0; j < MULTIPALETTEICONS.length; j++) {
                         const img = makePaletteIcons(
                             PALETTEICONS[MULTIPALETTEICONS[j]]
@@ -435,7 +421,6 @@ class ThemeBox {
                             this.activity.palettes.cellSize
                         );
                         tr.children[j].children[0].src = img.src;
-                        tr.children[j].style.backgroundColor = platformColor.paletteBackground;
                         tr.children[j].children[1].style.background =
                             platformColor.paletteLabelBackground;
                     }
